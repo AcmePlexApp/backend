@@ -10,6 +10,7 @@ import jakarta.persistence.*;
 @DiscriminatorValue("registeredUser")
 public class RegisteredUser extends User {
 	
+	public static String RegisteredUserKey = "registeredUser";
 	
 	private LocalDateTime membershipExpires;
 	

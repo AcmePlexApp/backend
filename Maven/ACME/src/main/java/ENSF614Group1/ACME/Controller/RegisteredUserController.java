@@ -1,7 +1,12 @@
 package ENSF614Group1.ACME.Controller;
 
+import ENSF614Group1.ACME.Model.*;
 import ENSF614Group1.ACME.Model.RegisteredUser;
+import ENSF614Group1.ACME.Service.*;
 import ENSF614Group1.ACME.Repository.RegisteredUserRepository;
+import ENSF614Group1.ACME.Repository.UserRepository;
+import jakarta.persistence.EntityManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +19,10 @@ public class RegisteredUserController {
 
     @Autowired
     private RegisteredUserRepository registeredUserRepository;
+    
+    @Autowired
+    private RegisteredUserService registeredUserService;
+
 
     // Get all registeredUsers
     @GetMapping
@@ -50,4 +59,6 @@ public class RegisteredUserController {
     public void deleteRegisteredUser(@PathVariable Long id) {
     	registeredUserRepository.deleteById(id);
     }
+    
+    
 }

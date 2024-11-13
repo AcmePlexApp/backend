@@ -1,18 +1,23 @@
 package ENSF614Group1.ACME.Controller;
 
+import ENSF614Group1.ACME.Model.CreditCard;
+import ENSF614Group1.ACME.Model.RegisteredUser;
 import ENSF614Group1.ACME.Model.User;
+import ENSF614Group1.ACME.Repository.RegisteredUserRepository;
 import ENSF614Group1.ACME.Repository.UserRepository;
+import jakarta.persistence.EntityManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
-
-    @Autowired
-    private UserRepository userRepository;
+	
+	@Autowired private UserRepository userRepository;
 
     // Get all users
     @GetMapping
@@ -50,4 +55,5 @@ public class UserController {
     public void deleteUser(@PathVariable Long id) {
     	userRepository.deleteById(id);
     }
+   
 }

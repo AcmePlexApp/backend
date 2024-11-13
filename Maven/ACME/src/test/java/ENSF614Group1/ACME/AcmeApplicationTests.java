@@ -13,21 +13,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ENSF614Group1.ACME.Model.*;
 import ENSF614Group1.ACME.Repository.*;
+import ENSF614Group1.ACME.Service.*;
 import jakarta.persistence.EntityManager;
 
 @SpringBootTest
 @Transactional // Reverts changes after each test.
 class AcmeApplicationTests {
-		
-    @Autowired private UserRepository userRepository;
-    @Autowired private RegisteredUserRepository registeredUserRepository;
-    @Autowired private BankRepository bankRepository;
-    @Autowired private CreditCardRepository creditCardRepository;
-    @Autowired private CreditRepository creditRepository;
-
-    
+		    
     @Autowired private EntityManager entityManager;  // Injecting EntityManager
 
+    @Autowired private UserService userService;
+    @Autowired private RegisteredUserService registeredUserService;
+    @Autowired private BankService bankService;
+    @Autowired private CreditCardService creditCardService;
+    @Autowired private CreditService creditService;
 
 	@Test
 	void contextLoads() {
@@ -37,9 +36,9 @@ class AcmeApplicationTests {
 	@Test
     void testCreateBankAndCreditCard() {
 		Bank bank = getTestBank();
-		Bank savedBank = bankRepository.save(bank);
+		Bank savedBank = bankService.createBank(bank);
 		CreditCard creditCard = getTestCreditCard(savedBank);
-        CreditCard savedCreditCard = creditCardRepository.save(creditCard);
+        CreditCard savedCreditCard = creditCardService.createCreditCard(creditCard);
         assertNotNull(savedCreditCard.getID());
         assertEquals(TestBankName, savedCreditCard.getBank().getTitle());
     }
@@ -47,29 +46,22 @@ class AcmeApplicationTests {
 	@Test
     void testCreateUserWithCreditsAndRegisterWithCreditCard() {
 		Bank bank = getTestBank();
-		Bank savedBank = bankRepository.save(bank);
+		Bank savedBank = bankService.createBank(bank);
 		CreditCard creditCard = getTestCreditCard(savedBank);
-        CreditCard savedCreditCard = creditCardRepository.save(creditCard);
+        CreditCard savedCreditCard = creditCardService.createCreditCard(creditCard);
 		User user = getTestUser();
-		User savedUser = userRepository.save(user);
+		User savedUser = userService.createUser(user);
 		loadUserWithTestCredits(savedUser);
 		Long savedUserID = savedUser.getID();
-		specializeUserToRegisteredUser(savedUser);
-		Optional<RegisteredUser> foundRegisteredUser = registeredUserRepository.findById(savedUserID);
-		assertTrue(foundRegisteredUser.isPresent(), "User should be found by ID");
-        assertTrue(userRepository.findById(savedUserID).isPresent()); // will STILL show up in userRepository
-		RegisteredUser registeredUser = foundRegisteredUser.get();
-		registeredUser.setMembershipExpires(TestMembershipExpires);
-		registeredUser.setCreditCard(savedCreditCard);
-		//userRepository.delete(savedUser);
-		RegisteredUser savedRegisteredUser = registeredUserRepository.save(registeredUser);
-		Long savedRegisteredUserID = savedRegisteredUser.getID();
-        assertNotNull(savedRegisteredUser.getID());
-        assertEquals(TestBankName, savedRegisteredUser.getCreditCard().getBank().getTitle());
-        //assertEquals(savedUserID, savedRegisteredUserID); // The registeredUser should have a different ID.
+		RegisteredUser registeredUser = registeredUserService.register(savedUser, TestMembershipExpires, savedCreditCard);
+        assertTrue(userService.getUserById(savedUserID).isPresent()); // Confirm it will STILL show up in userRepository with same ID
+		Long savedRegisteredUserID = registeredUser.getID();
+        assertNotNull(registeredUser.getID());
+        assertEquals(TestBankName, registeredUser.getCreditCard().getBank().getTitle()); // utilizing getters from base class
+        assertEquals(savedUserID, savedRegisteredUserID); // The registeredUser should have the same ID.
         
-        List<Credit> registeredCredits = savedRegisteredUser.getCredits();
-        assertEquals(registeredCredits.size(), TestCreditsSize);
+        List<Credit> registeredCredits = registeredUser.getCredits(); // Make sure foreign keys for credits still work.
+        assertEquals(registeredCredits.size(), TestCreditsSize); // Make sure foreign keys for credits still work.
         
 	}
 
@@ -130,18 +122,8 @@ class AcmeApplicationTests {
 	void loadUserWithTestCredits(User user) {
 		for(int i=0; i<TestCreditsSize; i++) {
 			Credit credit = getTestCredit(i % 2 == 0, user);
-			Credit savedCredit = creditRepository.save(credit);
+			Credit savedCredit = creditService.createCredit(credit);
 		}
 	}
-	
-	void specializeUserToRegisteredUser(User user) {
-		Long tempID = user.getID();
-		entityManager.createNativeQuery("UPDATE user SET user_type = :newType WHERE id = :userId")
-    	.setParameter("newType", RegisteredUserKey)
-    	.setParameter("userId", tempID)
-    	.executeUpdate();
-		// Flush and clear to reload repository data
-		entityManager.flush();
-		entityManager.clear();
-	}
+
 }
