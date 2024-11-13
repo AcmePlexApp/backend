@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 @Entity
 public class RegisteredUser extends User {
 	
+	
 	private LocalDateTime membershipExpires;
 	
 	@OneToOne(cascade = CascadeType.ALL)

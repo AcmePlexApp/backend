@@ -17,6 +17,7 @@ public class Credit {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     
+    public Long getID() {return id;}
     public Double getAmount() {return amount;}
     public Double getAmountUsed() {return amountUsed;}
     public LocalDateTime getExpires() {return expires;}

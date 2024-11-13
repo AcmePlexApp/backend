@@ -8,6 +8,7 @@ public class AcmeApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(AcmeApplication.class, args);
+		
 	}
 
 }

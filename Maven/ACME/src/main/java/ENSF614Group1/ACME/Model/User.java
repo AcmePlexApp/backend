@@ -17,6 +17,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Credit> posts = new ArrayList<>();
     
+    public Long getID() {return id;}
     public String getUsername() {return username;}
     public String getPassword() {return password;}
     public String getEmail() {return email;}

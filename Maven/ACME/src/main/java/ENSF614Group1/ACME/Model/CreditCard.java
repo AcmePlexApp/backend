@@ -24,6 +24,7 @@ public class CreditCard {
     @JoinColumn(name = "bank_id", referencedColumnName = "id")
 	private Bank bank;
     
+    public Long getID() {return id;}
     public String getFirstName() {return firstName;}
     public String getLastName() {return lastName;}
     public String getCardNumber() {return cardNumber;}
