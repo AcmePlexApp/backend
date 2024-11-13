@@ -38,10 +38,7 @@ public class BankController {
     public Bank updateBank(@PathVariable Long id, @RequestBody Bank bankDetails) {
     	Bank bank = bankRepository.findById(id).orElse(null);
         if (bank != null) {
-            
-            bank.setAmount(bankDetails.getAmount());
-            bank.setAmountUsed(bankDetails.getAmountUsed());
-            bank.setExpires(bankDetails.getExpires());
+            bank.setTitle(bankDetails.getTitle());
             return bankRepository.save(bank);
         }
         return null;
