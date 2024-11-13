@@ -21,4 +21,8 @@ public class Credit {
     public Double getAmountUsed() {return amountUsed;}
     public LocalDateTime getExpires() {return expires;}
     
+    public void setAmount(Double amount) {this.amount = amount;}
+    public void setAmountUsed(Double amountUsed) {this.amountUsed = amountUsed;}
+    public void setExpires(LocalDateTime expires) {this.expires = expires;}
+    
 }

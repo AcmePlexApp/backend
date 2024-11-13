@@ -20,9 +20,20 @@ public class CreditCard {
     @JoinColumn(name = "registeredUser_id", nullable = true)
     private RegisteredUser registeredUser;
     
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "bank_id", referencedColumnName = "id")
+	private Bank bank;
+    
     public String getFirstName() {return firstName;}
     public String getLastName() {return lastName;}
     public String getCardNumber() {return cardNumber;}
     public String getExpiry() {return expiry;}
+    public Bank getBank() {return bank;}
+    
+    public void setFirstName(String firstName) {this.firstName = firstName;}
+    public void setLastName(String lastName) {this.lastName = lastName;}
+    public void setCardNumber(String cardNumber) {this.cardNumber = cardNumber;}
+    public void setExpiry(String expiry) {this.expiry = expiry;}
+    public void setBank(Bank bank) {this.bank = bank;}
     
 }

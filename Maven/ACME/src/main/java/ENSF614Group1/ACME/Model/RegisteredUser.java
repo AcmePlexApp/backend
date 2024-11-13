@@ -14,4 +14,10 @@ public class RegisteredUser extends User {
 	@OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "creditCard_id", referencedColumnName = "id")
 	private CreditCard creditCard;
+	
+	public LocalDateTime getMembershipExpires() {return membershipExpires;}
+	public CreditCard getCreditCard() {return creditCard;}
+	
+	public void setMembershipExpires(LocalDateTime membershipExpires) {this.membershipExpires = membershipExpires;}
+    public void setCreditCard(CreditCard creditCard) {this.creditCard = creditCard;}
 }
