@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,16 +16,40 @@ public class User {
     private String email;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Credit> posts = new ArrayList<>();
+    private List<Credit> credits = new ArrayList<>();
     
     public Long getID() {return id;}
     public String getUsername() {return username;}
     public String getPassword() {return password;}
     public String getEmail() {return email;}
+    public List<Credit> getCredits() {return credits;}
     
     public void setUsername(String username) {this.username = username;}
     public void setPassword(String password) {this.password = password;}
     public void setEmail(String email) {this.email = email;}
-
     
+    public User() {
+    	
+    }
+    
+    public User(
+    		String username,
+    		String password,
+    		String email
+    		)
+    {
+    	this.username = username;
+    	this.password = password;
+    	this.email = email;
+    	
+    }
+    
+    
+    public User(User user) {
+    	this.id = user.id;
+    	this.username = user.username;
+    	this.password = user.password;
+    	this.email = user.email;
+    }
+
 }

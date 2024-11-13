@@ -26,4 +26,15 @@ public class Credit {
     public void setAmountUsed(Double amountUsed) {this.amountUsed = amountUsed;}
     public void setExpires(LocalDateTime expires) {this.expires = expires;}
     
+    public Credit() {
+    	
+    }
+    
+    public Credit(Double amount, Double AmountUsed, LocalDateTime expires, User user) {
+    	this.amount = amount;
+    	this.amountUsed = amountUsed;
+    	this.expires = expires;
+    	this.user = user;
+    }
+    
 }

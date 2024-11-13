@@ -16,12 +16,8 @@ public class CreditCard {
     private String cardNumber;
     private String expiry;
     
-    @OneToOne
-    @JoinColumn(name = "registeredUser_id", nullable = true)
-    private RegisteredUser registeredUser;
-    
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "bank_id", referencedColumnName = "id")
+    @JoinColumn(name = "bank_id", referencedColumnName = "id", nullable = false)
 	private Bank bank;
     
     public Long getID() {return id;}
@@ -36,5 +32,23 @@ public class CreditCard {
     public void setCardNumber(String cardNumber) {this.cardNumber = cardNumber;}
     public void setExpiry(String expiry) {this.expiry = expiry;}
     public void setBank(Bank bank) {this.bank = bank;}
+    
+    public CreditCard() {}
+    
+    public CreditCard(
+    		String firstName,
+    	    String lastName,
+    	    String cardNumber,
+    	    String expiry,
+    	    Bank bank
+    		) {
+    	this.firstName = firstName;
+    	this.lastName = lastName;
+    	this.cardNumber = cardNumber;
+    	this.expiry = expiry;
+    	this.bank = bank;
+    }
+    
+    
     
 }

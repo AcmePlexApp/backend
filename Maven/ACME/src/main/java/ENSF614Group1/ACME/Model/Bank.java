@@ -11,13 +11,17 @@ public class Bank {
     private Long id;
     private String title;
     
-    @OneToOne(mappedBy = "bank")
-	private CreditCard creditCard;
-//spring.flyway.enabled=true and spring.flyway.baselineOnMigrate=true
-    
     public Long getID() {return id;}
     public String getTitle() {return title;}
     
     public void setTitle(String title) {this.title = title;}
+    
+    public Bank() {
+    	
+    }
+    
+    public Bank(String title) {
+    	this.title = title;
+    }
     
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import jakarta.persistence.*;
 
 @Entity
+@DiscriminatorValue("registeredUser")
 public class RegisteredUser extends User {
 	
 	
@@ -21,4 +22,15 @@ public class RegisteredUser extends User {
 	
 	public void setMembershipExpires(LocalDateTime membershipExpires) {this.membershipExpires = membershipExpires;}
     public void setCreditCard(CreditCard creditCard) {this.creditCard = creditCard;}
+    
+    public RegisteredUser() {
+    	super();
+    }
+    
+    public RegisteredUser(User user, LocalDateTime membershipExpires, CreditCard creditCard ) {
+    	super(user);
+    	this.membershipExpires = membershipExpires;
+    	this.creditCard = creditCard;
+    }
+    
 }
