@@ -54,15 +54,10 @@ class AcmeApplicationTests {
 		User savedUser = userRepository.save(user);
 		loadUserWithTestCredits(savedUser);
 		Long savedUserID = savedUser.getID();
-		entityManager.createNativeQuery("UPDATE user SET user_type = :newType WHERE id = :userId")
-        	.setParameter("newType", RegisteredUserKey)
-        	.setParameter("userId", savedUserID)
-        	.executeUpdate();
-		// Flush and clear to reload repository data
-        entityManager.flush();
-        entityManager.clear();
+		specializeUserToRegisteredUser(savedUser);
 		Optional<RegisteredUser> foundRegisteredUser = registeredUserRepository.findById(savedUserID);
 		assertTrue(foundRegisteredUser.isPresent(), "User should be found by ID");
+        assertTrue(userRepository.findById(savedUserID).isPresent()); // will STILL show up in userRepository
 		RegisteredUser registeredUser = foundRegisteredUser.get();
 		registeredUser.setMembershipExpires(TestMembershipExpires);
 		registeredUser.setCreditCard(savedCreditCard);
@@ -71,11 +66,11 @@ class AcmeApplicationTests {
 		Long savedRegisteredUserID = savedRegisteredUser.getID();
         assertNotNull(savedRegisteredUser.getID());
         assertEquals(TestBankName, savedRegisteredUser.getCreditCard().getBank().getTitle());
-        //assertTrue(userRepository.findById(savedUserID).isEmpty()); // Should have deleted the User
         //assertEquals(savedUserID, savedRegisteredUserID); // The registeredUser should have a different ID.
         
         List<Credit> registeredCredits = savedRegisteredUser.getCredits();
         assertEquals(registeredCredits.size(), TestCreditsSize);
+        
 	}
 
 	static String RegisteredUserKey = "registeredUser";
@@ -137,5 +132,16 @@ class AcmeApplicationTests {
 			Credit credit = getTestCredit(i % 2 == 0, user);
 			Credit savedCredit = creditRepository.save(credit);
 		}
+	}
+	
+	void specializeUserToRegisteredUser(User user) {
+		Long tempID = user.getID();
+		entityManager.createNativeQuery("UPDATE user SET user_type = :newType WHERE id = :userId")
+    	.setParameter("newType", RegisteredUserKey)
+    	.setParameter("userId", tempID)
+    	.executeUpdate();
+		// Flush and clear to reload repository data
+		entityManager.flush();
+		entityManager.clear();
 	}
 }
