@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import java.time.LocalTime;
 
@@ -16,9 +18,12 @@ public class Showtime {
     private Long id;
 	
 	@OneToOne(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
-	private Movie movie;
-	
+	private Movie movie;	
 	private LocalTime timeOfDay;
+	
+	@ManyToOne
+	@JoinColumn(name = "theater_id")
+	private Theater theater;
 	
 	// Getters
 	public Long getID() {return id;}

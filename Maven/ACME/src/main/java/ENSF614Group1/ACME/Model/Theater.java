@@ -1,5 +1,6 @@
 package ENSF614Group1.ACME.Model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -13,13 +14,13 @@ public class Theater {
 	private String name;
 	
 	@OneToMany(mappedBy = "theater", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Seat> seats;
+	private List<Seat> seats = new ArrayList<>();
 	
 	@OneToMany(mappedBy = "theater", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Showtime> showtimes;
+	private List<Showtime> showtimes = new ArrayList<>();
 	
 	// Getters
-	public Long getID() {return id;}
+	public Long getId() {return id;}
 	public String getName() {return name;}
 	public List<Seat> getSeats(){return seats;}
 	public List<Showtime> getShowtimes() {return showtimes;}
@@ -31,15 +32,26 @@ public class Theater {
 	
 	// Constructors
 	public Theater() {}
-	public Theater(String name, List<Seat> seats, List<Showtime> showtimes) {
+	public Theater(String name) {
 		this.name = name;
-		this.seats = seats;
-		this.showtimes = showtimes;
 	}
 	public Theater(Theater theater) {
 		this.name = theater.name;
-		this.seats = theater.seats;
-		this.showtimes = theater.showtimes;
+	}
+	
+	// Methods
+	void addShowtime(Showtime showtime) {
+		if (showtimes.contains(showtime)) {
+			throw new IllegalArgumentException("Showtime already exists.");
+		}
+		showtimes.add(showtime);
+	}
+	
+	void removeShowtime(Showtime showtime) {
+		if (!showtimes.contains(showtime)) {
+			throw new IllegalArgumentException("Showtime not found.");
+		}
+		showtimes.remove(showtime);
 	}
 	
 }
