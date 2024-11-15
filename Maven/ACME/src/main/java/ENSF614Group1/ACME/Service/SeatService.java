@@ -46,7 +46,7 @@ public class SeatService {
 			throw new EntityNotFoundException("Seat does not exist.");
 		}
 		Seat s = seat.get();
-		s.setRow(seatDetails.getRow());
+		s.setSeatRow(seatDetails.getSeatRow());
 		s.setSeatNumber(seatDetails.getSeatNumber());
 		return seatRepository.save(s);
 	}

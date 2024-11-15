@@ -13,7 +13,7 @@ public class Seat {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-	private int row;
+	private int seatRow;
 	private int seatNumber;
 	
 	@ManyToOne
@@ -21,22 +21,22 @@ public class Seat {
 	private Theater theater;
 	
 	// Getters
-	public Long getID() {return id;}
-	public int getRow() {return row;}
+	public Long getId() {return id;}
+	public int getSeatRow() {return seatRow;}
 	public int getSeatNumber() {return seatNumber;}
 	
 	// Setters
-	public void setRow(int row) {this.row = row;}
+	public void setSeatRow(int seatRow) {this.seatRow = seatRow;}
 	public void setSeatNumber(int seat) {this.seatNumber = seat;}
 
 	// Constructors
 	public Seat() {}
-	public Seat(int row, int seat) {
-		this.row = row;
+	public Seat(int seatRow, int seat) {
+		this.seatRow = seatRow;
 		this.seatNumber = seat;
 	}
 	public Seat(Seat seat) {
-		this.row = seat.row;
+		this.seatRow = seat.seatRow;
 		this.seatNumber = seat.seatNumber;
 	}
 }
