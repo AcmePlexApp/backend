@@ -8,6 +8,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
 
@@ -24,6 +28,14 @@ public class Movie {
     private String title;    
     private String description;  
     private int durationInMinutes;
+    
+    @ManyToMany
+	@JoinTable(
+			name = "theater_movie", 
+			joinColumns = @JoinColumn(name = "movie_id"), 
+			inverseJoinColumns = @JoinColumn(name= "theater_id")
+	)
+    private List<Theater> theaters = new ArrayList<>();
 
     // Getters
     public Long getId() {return id;}
@@ -31,12 +43,14 @@ public class Movie {
     public String getDescription() {return description;}
     public int getDuration() {return durationInMinutes;}
     public List<Showtime> getShowtimes() {return showtimes;}
+    public List<Theater> getTheaters() {return theaters;}
     
     // Setters
     public void setTitle(String title) {this.title = title;}
     public void setDescription(String description) {this.description = description;}
     public void setDuration(int duration) {this.durationInMinutes = duration;}
     public void setShowtimes(List<Showtime> showtimes) {this.showtimes = showtimes;}
+    public void setTheaters(List<Theater> theaters) {this.theaters = theaters;}
     
     // Constructors
     public Movie() {}
@@ -50,21 +64,5 @@ public class Movie {
     	this.description = movie.description;
     	this.durationInMinutes = movie.durationInMinutes;
     }
-    
-    // Methods
-    // don't think we need this??
- 	void addShowtime(Showtime showtime) {
- 		if (showtimes.contains(showtime)) {
- 			throw new IllegalArgumentException("Showtime already exists.");
- 		}
- 		showtimes.add(showtime);
- 	}
- 	
- 	void removeShowtime(Showtime showtime) {
- 		if (!showtimes.contains(showtime)) {
- 			throw new IllegalArgumentException("Showtime not found.");
- 		}
- 		showtimes.remove(showtime);
- 	}
 
 }

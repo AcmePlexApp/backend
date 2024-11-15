@@ -16,7 +16,7 @@ public class Theater {
 	@OneToMany(mappedBy = "theater", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Seat> seats = new ArrayList<>();
 	
-	@OneToMany(mappedBy = "theater", cascade = CascadeType.ALL, orphanRemoval = true)
+	@ManyToMany(mappedBy = "theaters", cascade = CascadeType.ALL)
 	private List<Movie> movies = new ArrayList<>();
 	
 	// Getters
