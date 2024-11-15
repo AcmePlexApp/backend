@@ -28,8 +28,8 @@ public class SeatController {
 	
 	@PostMapping
 	public ResponseEntity<Seat> createSeat(@RequestBody Seat seat){
-			Seat createdSeat = seatService.createSeat(seat);
-			return ResponseEntity.status(HttpStatus.CREATED).body(createdSeat);	
+		Seat createdSeat = seatService.createSeat(seat);
+		return ResponseEntity.status(HttpStatus.CREATED).body(createdSeat);	
 	}
 	
 	@GetMapping
@@ -39,19 +39,19 @@ public class SeatController {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Seat> getSeatById(@PathVariable Long id) {
-			Seat seat = seatService.getSeatById(id);
-			return ResponseEntity.status(HttpStatus.OK).body(seat);
+		Seat seat = seatService.getSeatById(id);
+		return ResponseEntity.status(HttpStatus.OK).body(seat);
 	}
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<Seat> updateSeatById(@PathVariable Long id, @RequestBody Seat seatDetails){
-			Seat seat = seatService.updateSeat(id, seatDetails);
-			return ResponseEntity.status(HttpStatus.OK).body(seat);
+		Seat seat = seatService.updateSeat(id, seatDetails);
+		return ResponseEntity.status(HttpStatus.OK).body(seat);
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteSeatById(@PathVariable Long id){
-			seatService.deleteSeat(id);
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		seatService.deleteSeat(id);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }

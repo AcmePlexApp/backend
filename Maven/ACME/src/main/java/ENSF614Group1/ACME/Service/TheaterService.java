@@ -25,8 +25,12 @@ public class TheaterService {
 		return theaterRepository.findAll();
 	}
 	
-	public Optional<Theater> getTheaterById(Long id){
-		return theaterRepository.findById(id);
+	public Theater getTheaterById(Long id){
+		Optional<Theater> theater = theaterRepository.findById(id);
+		if(theater.isEmpty()) {
+			throw new EntityNotFoundException("Theater does not exist.");
+		}
+		return theater.get();
 	}
 	
 	@Transactional
@@ -38,7 +42,7 @@ public class TheaterService {
 		Theater t = theater.get();
 		t.setName(theaterDetails.getName());
 		t.setSeats(theaterDetails.getSeats());
-		t.setShowtimes(theaterDetails.getShowtimes());
+		t.setMovies(theaterDetails.getMovies());
 		return theaterRepository.save(t);
 	}
 	

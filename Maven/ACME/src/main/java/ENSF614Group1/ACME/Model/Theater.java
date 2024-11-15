@@ -17,18 +17,18 @@ public class Theater {
 	private List<Seat> seats = new ArrayList<>();
 	
 	@OneToMany(mappedBy = "theater", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Showtime> showtimes = new ArrayList<>();
+	private List<Movie> movies = new ArrayList<>();
 	
 	// Getters
 	public Long getId() {return id;}
 	public String getName() {return name;}
 	public List<Seat> getSeats(){return seats;}
-	public List<Showtime> getShowtimes() {return showtimes;}
+	public List<Movie> getMovies() {return movies;}
 	
 	// Setters
 	public void setName(String name) {this.name = name;}
 	public void setSeats(List<Seat> seats) {this.seats = seats;}
-	public void setShowtimes(List<Showtime> showtimes ) {this.showtimes = showtimes;}
+	public void setMovies(List<Movie> movies ) {this.movies = movies;}
 	
 	// Constructors
 	public Theater() {}
@@ -37,21 +37,6 @@ public class Theater {
 	}
 	public Theater(Theater theater) {
 		this.name = theater.name;
-	}
-	
-	// Methods
-	void addShowtime(Showtime showtime) {
-		if (showtimes.contains(showtime)) {
-			throw new IllegalArgumentException("Showtime already exists.");
-		}
-		showtimes.add(showtime);
-	}
-	
-	void removeShowtime(Showtime showtime) {
-		if (!showtimes.contains(showtime)) {
-			throw new IllegalArgumentException("Showtime not found.");
-		}
-		showtimes.remove(showtime);
 	}
 	
 }

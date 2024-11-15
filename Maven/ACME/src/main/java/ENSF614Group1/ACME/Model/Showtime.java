@@ -1,13 +1,11 @@
 package ENSF614Group1.ACME.Model;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import java.time.LocalTime;
 
 @Entity
@@ -17,13 +15,11 @@ public class Showtime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 	
-	@OneToOne(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
-	private Movie movie;	
 	private LocalTime timeOfDay;
 	
 	@ManyToOne
-	@JoinColumn(name = "theater_id")
-	private Theater theater;
+	@JoinColumn(name = "movie_id")
+	private Movie movie;
 	
 	// Getters
 	public Long getID() {return id;}
@@ -31,10 +27,6 @@ public class Showtime {
 	public LocalTime getTimeOfDay() {return timeOfDay;}
 	
 	// Setters
-	public void setMovie(Movie movie) {
-		this.movie = movie;
-	}
-	
 	public void setTimeOfDay(LocalTime timeOfDay) {
 		this.timeOfDay = timeOfDay;
 	}
