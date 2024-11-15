@@ -15,8 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import ENSF614Group1.ACME.Model.Seat;
 import ENSF614Group1.ACME.Model.Theater;
+import ENSF614Group1.ACME.Service.SeatService;
 import ENSF614Group1.ACME.Service.TheaterService;
+import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/theater")
@@ -25,18 +28,23 @@ public class TheaterController {
 	@Autowired
 	private TheaterService theaterService;
 	
-	@GetMapping
-	public ResponseEntity<List<Theater>> getAllTheaters(){
-		return ResponseEntity.ok(theaterService.getAllTheaters());
-	}
+	@Autowired
+	private SeatService seatService;
 	
 	@PostMapping
 	public ResponseEntity<Theater> createTheater(@RequestBody Theater theater) {
-        // Save the theater to the database
-        Theater createdTheater = theaterService.createTheater(theater);
-        // Return 201 created response with the saved theater and Location header
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdTheater);
-    }
+		try {
+			Theater createdTheater = theaterService.createTheater(theater);
+			return ResponseEntity.status(HttpStatus.CREATED).body(createdTheater);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
+	}
+	
+	@GetMapping
+	public ResponseEntity<List<Theater>> getAllTheaters(){
+		return ResponseEntity.status(HttpStatus.OK).body(theaterService.getAllTheaters());
+	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Theater> getTheaterById(@PathVariable Long id) {
@@ -48,22 +56,32 @@ public class TheaterController {
 	    return ResponseEntity.status(HttpStatus.OK).body(theater.get());
 	}
 	
+	@GetMapping("/{id}/seats")
+	public ResponseEntity<List<Seat>> getSeatsInTheater(@PathVariable Long id){
+		Optional<Theater> theater = theaterService.getTheaterById(id);
+		if (theater.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}
+		List<Seat> seats = seatService.getSeatsInTheater(theater.get());
+		return ResponseEntity.status(HttpStatus.OK).body(seats);
+	}
+	
 	@PutMapping("/{id}")
 	public ResponseEntity<Theater> updateTheaterById(@PathVariable Long id, @RequestBody Theater theaterDetails){
 		try {
 			Theater theater = theaterService.updateTheater(id, theaterDetails);
 			return ResponseEntity.status(HttpStatus.OK).body(theater);
-		} catch (RuntimeException e) {
+		} catch (EntityNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteTheater(@PathVariable Long id) {
+	public ResponseEntity<Void> deleteTheaterById(@PathVariable Long id) {
 		try {
 			theaterService.deleteTheater(id);
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-		} catch (RuntimeException e) {
+		} catch (EntityNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 	}
