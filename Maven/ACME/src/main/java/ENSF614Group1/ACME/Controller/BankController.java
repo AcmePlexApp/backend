@@ -1,52 +1,57 @@
 package ENSF614Group1.ACME.Controller;
 
-import ENSF614Group1.ACME.Model.Bank;
-import ENSF614Group1.ACME.Repository.BankRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import ENSF614Group1.ACME.Model.Bank;
+import ENSF614Group1.ACME.Service.BankService;
+import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/bank")
 public class BankController {
-
-    @Autowired
-    private BankRepository bankRepository;
-
-    // Get all banks
-    @GetMapping
-    public List<Bank> getAllBanks() {
-        return bankRepository.findAll();
-    }
-
-    // Create a new bank
-    @PostMapping
-    public Bank createBank(@RequestBody Bank bank) {
-        return bankRepository.save(bank);
-    }
-
-    // Get a bank by ID
-    @GetMapping("/{id}")
-    public Bank getBankById(@PathVariable Long id) {
-        return bankRepository.findById(id).orElse(null);
-    }
-
-    // Update a bank by ID
-    @PutMapping("/{id}")
-    public Bank updateBank(@PathVariable Long id, @RequestBody Bank bankDetails) {
-    	Bank bank = bankRepository.findById(id).orElse(null);
-        if (bank != null) {
-            bank.setTitle(bankDetails.getTitle());
-            return bankRepository.save(bank);
-        }
-        return null;
-    }
-
-    // Delete a bank by ID
-    @DeleteMapping("/{id}")
-    public void deleteBank(@PathVariable Long id) {
-    	bankRepository.deleteById(id);
-    }
+	
+	@Autowired
+	private BankService bankService;
+	
+	@PostMapping
+	public ResponseEntity<Bank> createBank(@RequestBody Bank bank){
+		Bank createdBank = bankService.createBank(bank);
+		return ResponseEntity.status(HttpStatus.CREATED).body(createdBank);	
+	}
+	
+	@GetMapping
+	public ResponseEntity<List<Bank>> getAllBanks() {
+		return ResponseEntity.status(HttpStatus.OK).body(bankService.getAllBanks());
+	}
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<Bank> getBankById(@PathVariable Long id) {
+		Bank bank = bankService.getBankById(id);
+		return ResponseEntity.status(HttpStatus.OK).body(bank);
+	}
+	
+	@PutMapping("/{id}")
+	public ResponseEntity<Bank> updateBankById(@PathVariable Long id, @RequestBody Bank bankDetails){
+		Bank bank = bankService.updateBank(id, bankDetails);
+		return ResponseEntity.status(HttpStatus.OK).body(bank);
+	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deleteBankById(@PathVariable Long id){
+		bankService.deleteBank(id);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
 }
