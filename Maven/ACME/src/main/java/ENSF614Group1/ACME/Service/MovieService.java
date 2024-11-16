@@ -44,7 +44,7 @@ public class MovieService {
 		Movie m = movie.get();
 		m.setTitle(movieDetails.getTitle());
 		m.setDescription(movieDetails.getDescription());
-		m.setDuration(movieDetails.getDuration());
+		m.setDurationInMinutes(movieDetails.getDurationInMinutes());
 		m.setShowtimes(movieDetails.getShowtimes());
 		m.setTheaters(movieDetails.getTheaters());
 		return movieRepository.save(m);
