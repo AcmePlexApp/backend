@@ -3,6 +3,8 @@ package ENSF614Group1.ACME.Model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -19,6 +21,7 @@ public class Theater {
 			joinColumns = @JoinColumn(name = "theater_id"),
 			inverseJoinColumns = @JoinColumn(name = "movie_id")
 	)
+	@JsonManagedReference // Allows the `Theater` to be serialized properly
 	private List<Movie> movies = new ArrayList<>();
 	
 	@OneToMany(mappedBy = "theater", cascade = CascadeType.PERSIST, orphanRemoval = true)

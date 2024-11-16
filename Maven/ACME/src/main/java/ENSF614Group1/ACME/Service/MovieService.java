@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ENSF614Group1.ACME.Model.Movie;
+import ENSF614Group1.ACME.Model.Theater;
 import ENSF614Group1.ACME.Repository.MovieRepository;
 import ENSF614Group1.ACME.Repository.TheaterRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -17,6 +18,9 @@ public class MovieService {
 
 	@Autowired
 	public MovieRepository movieRepository;
+	
+	@Autowired
+	public TheaterRepository theaterRepository;
 	
 	@Transactional
 	public Movie createMovie(Movie movie) {
@@ -33,6 +37,10 @@ public class MovieService {
 			throw new EntityNotFoundException("Movie does not exist.");
 		}
 		return movie.get();
+	}
+	
+	public List<Movie> getMoviesInTheater(Theater theater){
+		return movieRepository.findByTheaters(theater);
 	}
 	
 	@Transactional
@@ -57,4 +65,5 @@ public class MovieService {
 		}
 		movieRepository.deleteById(id);
 	}
+	
 }

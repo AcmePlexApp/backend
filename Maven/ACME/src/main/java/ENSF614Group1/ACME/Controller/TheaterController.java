@@ -52,19 +52,11 @@ public class TheaterController {
 		theaterService.addMovieToTheater(theaterId, movieId);
 		Theater theater = theaterService.getTheaterById(theaterId);
 		Movie movie = movieService.getMovieById(movieId);
-		String response = movie.getTitle() + "movie has been added to " + theater.getName() + "theater.";
+		String response = movie.getTitle() + " movie has been added to " + theater.getName() + " theater.";
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	
-	// delete movie from theater
-	
-	// add seat to theater
-	
-	// delete seat from theater
-	
 	// add showtime to theater
-	
-	// delete showtime from theater
 	
 	@GetMapping
 	public ResponseEntity<List<Theater>> getAllTheaters(){
@@ -78,10 +70,17 @@ public class TheaterController {
 	}
 	
 	@GetMapping("/{id}/seats")
-	public ResponseEntity<List<Seat>> getSeatsInTheater(@PathVariable Long id){
+	public ResponseEntity<List<Seat>> getAllSeatsInTheater(@PathVariable Long id){
 		Theater theater = theaterService.getTheaterById(id);
 		List<Seat> seats = seatService.getSeatsInTheater(theater);
 		return ResponseEntity.status(HttpStatus.OK).body(seats);
+	}
+	
+	@GetMapping("/{id}/movies")
+	public ResponseEntity<List<Movie>> getAllMoviesInTheater(@PathVariable Long id){
+		Theater theater = theaterService.getTheaterById(id);
+		List<Movie> movies = movieService.getMoviesInTheater(theater);
+		return ResponseEntity.status(HttpStatus.OK).body(movies);
 	}
 	
 	@PutMapping("/{id}")
@@ -95,4 +94,15 @@ public class TheaterController {
 		theaterService.deleteTheater(id);
 		return ResponseEntity.status(HttpStatus.OK).body("Theater successfully removed.");
 	}
+	
+	@DeleteMapping("/{theaterId}/movies/{movieId}")
+	public ResponseEntity<String> deleteMovieFromTheater(@PathVariable Long theaterId, @PathVariable Long movieId){
+		theaterService.deleteMovieFromTheater(theaterId, movieId);
+		Theater theater = theaterService.getTheaterById(theaterId);
+		Movie movie = movieService.getMovieById(movieId);
+		String response = movie.getTitle() + " movie has been removed from " + theater.getName() + " theater.";
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+	
+	// delete showtime from theater
 }

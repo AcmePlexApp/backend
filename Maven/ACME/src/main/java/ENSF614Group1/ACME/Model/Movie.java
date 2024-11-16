@@ -3,6 +3,8 @@ package ENSF614Group1.ACME.Model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,6 +32,7 @@ public class Movie {
     private int durationInMinutes;
     
     @ManyToMany(mappedBy = "movies")
+    @JsonBackReference // Prevents infinite recursion when serializing `Movie`, so that the Theater objects do not appear in the serialization
     private List<Theater> theaters = new ArrayList<>();
     
     @OneToMany(mappedBy = "movie")

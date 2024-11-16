@@ -80,7 +80,7 @@ public class TheaterService {
 	}
 	
 	@Transactional
-	public void removeMovieFromTheater(Long theaterId, Long movieId) {
+	public void deleteMovieFromTheater(Long theaterId, Long movieId) {
 		Optional<Theater> theater = theaterRepository.findById(theaterId);
 		if (theater.isEmpty()) {
 			throw new EntityNotFoundException("Theater does not exist.");
