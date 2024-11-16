@@ -22,20 +22,15 @@ public class Movie {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;    
 	
-	@OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Showtime> showtimes = new ArrayList<>();
-	
     private String title;    
     private String description;  
     private int durationInMinutes;
     
-    @ManyToMany
-	@JoinTable(
-			name = "theater_movie", 
-			joinColumns = @JoinColumn(name = "movie_id"), 
-			inverseJoinColumns = @JoinColumn(name= "theater_id")
-	)
+    @ManyToMany(mappedBy = "movies")
     private List<Theater> theaters = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "movie")
+    private List<Showtime> showtimes = new ArrayList<>();
 
     // Getters
     public Long getId() {return id;}
@@ -59,10 +54,5 @@ public class Movie {
     	this.description = description;
     	this.durationInMinutes = duration;
     }
-    public Movie(Movie movie) {
-    	this.title = movie.title;
-    	this.description = movie.description;
-    	this.durationInMinutes = movie.durationInMinutes;
-    }
-
+    
 }

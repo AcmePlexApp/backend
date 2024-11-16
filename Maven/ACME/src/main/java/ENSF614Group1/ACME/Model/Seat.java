@@ -17,7 +17,7 @@ public class Seat {
 	private int seatNumber;
 	
 	@ManyToOne
-	@JoinColumn(name = "theater_id")
+	@JoinColumn(name = "theater_id", nullable = false)
 	private Theater theater;
 	
 	// Getters
@@ -31,12 +31,10 @@ public class Seat {
 
 	// Constructors
 	public Seat() {}
-	public Seat(int seatRow, int seat) {
+	public Seat(int seatRow, int seatNumber, Theater theater) {
 		this.seatRow = seatRow;
-		this.seatNumber = seat;
+		this.seatNumber = seatNumber;
+		this.theater = theater;
 	}
-	public Seat(Seat seat) {
-		this.seatRow = seat.seatRow;
-		this.seatNumber = seat.seatNumber;
-	}
+	
 }
