@@ -54,7 +54,7 @@ class AcmeApplicationTests {
 		loadUserWithTestCredits(savedUser);
 		Long savedUserID = savedUser.getID();
 		RegisteredUser registeredUser = registeredUserService.register(savedUser, TestMembershipExpires, savedCreditCard);
-        assertTrue(userService.getUserById(savedUserID).isPresent()); // Confirm it will STILL show up in userRepository with same ID
+        assertNotNull(userService.getUserById(savedUserID)); // Confirm it will STILL show up in userRepository with same ID
 		Long savedRegisteredUserID = registeredUser.getID();
         assertNotNull(registeredUser.getID());
         assertEquals(TestBankName, registeredUser.getCreditCard().getBank().getTitle()); // utilizing getters from base class
