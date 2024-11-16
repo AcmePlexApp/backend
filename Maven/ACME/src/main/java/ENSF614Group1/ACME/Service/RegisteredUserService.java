@@ -16,12 +16,9 @@ import java.util.Optional;
 @Service
 public class RegisteredUserService {
 
-	@Autowired
-	private RegisteredUserRepository registeredUserRepository;
-	
-    @PersistenceContext
-    private EntityManager entityManager;
-	
+	@Autowired private RegisteredUserRepository registeredUserRepository;
+	@Autowired private CreditCardRepository creditCardRepository;
+		
 	@Transactional
 	public RegisteredUser createRegisteredUser(RegisteredUser registeredUser) {
 		return registeredUserRepository.save(registeredUser);
@@ -58,22 +55,5 @@ public class RegisteredUserService {
 			throw new EntityNotFoundException("RegisteredUser does not exist.");
 		}
 		registeredUserRepository.deleteById(id);
-	}
-    
-    @Transactional
-    public RegisteredUser register(User user, LocalDateTime membershipExpires, CreditCard creditCard) {
-		// Specialization of a Generalized class requires manual SQL commands.
-		Long tempID = user.getID();
-		entityManager.createNativeQuery("UPDATE user SET user_type = :newType WHERE id = :userId")
-    	.setParameter("newType", RegisteredUser.RegisteredUserKey)
-    	.setParameter("userId", tempID)
-    	.executeUpdate();
-		// Flush and clear to reload repository data
-		entityManager.flush();
-		entityManager.clear();
-		RegisteredUser registeredUser = registeredUserRepository.findById(tempID).get();
-		registeredUser.setMembershipExpires(membershipExpires);
-		registeredUser.setCreditCard(creditCard);
-		return registeredUser;
 	}
 }

@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 public class User {
-		
+			
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,6 +33,10 @@ public class User {
     public void setPassword(String password) {this.password = password;}
     public void setEmail(String email) {this.email = email;}
     public void setCredits(List<Credit> credits) {this.credits = credits;}
+    
+    public void addCredit(Credit credit) {
+    	credits.add(credit);
+    }
     
     public User() {
     	

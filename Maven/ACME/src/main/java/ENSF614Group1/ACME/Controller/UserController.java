@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import ENSF614Group1.ACME.Model.Movie;
+import ENSF614Group1.ACME.Model.RegisteredUser;
+import ENSF614Group1.ACME.Model.Theater;
 import ENSF614Group1.ACME.Model.User;
 import ENSF614Group1.ACME.Service.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -53,5 +56,18 @@ public class UserController {
 	public ResponseEntity<Void> deleteUserById(@PathVariable Long id){
 		userService.deleteUser(id);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+	
+	@PostMapping("/{userId}/credits/{amount}")
+	public ResponseEntity<String> addCreditToUser(@PathVariable Long userId, @PathVariable Double amount){
+		User user = userService.addCreditToUser(userId, amount);
+		//Credit credit = creditService.getMovieById(movieId);
+		String response = amount + " credit has been added to " + user.getUsername() + " account.";
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+	
+	@PostMapping("/{userId}/register/{creditCardId}")
+	public RegisteredUser register(@PathVariable Long userId, @PathVariable Long creditCardId){
+		return userService.register(userId, creditCardId);
 	}
 }

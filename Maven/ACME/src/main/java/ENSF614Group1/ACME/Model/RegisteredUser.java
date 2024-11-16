@@ -10,11 +10,15 @@ import jakarta.persistence.*;
 @DiscriminatorValue("registeredUser")
 public class RegisteredUser extends User {
 	
+	static double CREDIT_FRACTION = 0.0;
+	
+	static int MONTHS_UNTIL_MEMBERSHIP_RENEWAL = 12;
+		
 	public static String RegisteredUserKey = "registeredUser";
 	
 	private LocalDateTime membershipExpires;
 	
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne()
     @JoinColumn(name = "creditCard_id", referencedColumnName = "id")
 	private CreditCard creditCard;
 	
@@ -22,6 +26,7 @@ public class RegisteredUser extends User {
 	public CreditCard getCreditCard() {return creditCard;}
 	
 	public void setMembershipExpires(LocalDateTime membershipExpires) {this.membershipExpires = membershipExpires;}
+	public void setMembershipExpires() {this.membershipExpires = LocalDateTime.now().plusMonths(MONTHS_UNTIL_MEMBERSHIP_RENEWAL);}
     public void setCreditCard(CreditCard creditCard) {this.creditCard = creditCard;}
     
     public RegisteredUser() {
