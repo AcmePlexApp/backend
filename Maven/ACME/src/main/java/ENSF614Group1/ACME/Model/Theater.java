@@ -44,6 +44,16 @@ public class Theater {
 	public Theater() {}
 	public Theater(String name) {
 		this.name = name;
+		createSeats();
+	}
+	
+	// Methods
+	private void createSeats() {
+		for(int i = 1; i <= 5; i++) {
+			for(int j = 1; j <= 5; j++) {
+				Seat seat = new Seat(i, j, this);
+				this.seats.add(seat);			}
+		}
 	}
 	
 }
