@@ -16,11 +16,19 @@ import java.util.Optional;
 @Service
 public class CreditCardService {
 
-	@Autowired
-	private CreditCardRepository creditCardRepository;
+	@Autowired private CreditCardRepository creditCardRepository;
+	@Autowired private BankRepository bankRepository;
 	
+	private Bank getManagedBank(Bank bank) {
+		return bankRepository.findById(bank.getID())
+                .orElseThrow(() -> new EntityNotFoundException("Bank not found when creating CreditCard"));
+	}
+		
 	@Transactional
 	public CreditCard createCreditCard(CreditCard creditCard) {
+			// Need to find embedded object from repository to make it "managed", otherwise it is detached.
+	        Bank managedBank = getManagedBank(creditCard.getBank());
+	        creditCard.setBank(managedBank);
 		return creditCardRepository.save(creditCard);
 	}
 	
@@ -43,13 +51,15 @@ public class CreditCardService {
 		if (creditCard.isEmpty()) {
 			throw new EntityNotFoundException("CreditCard does not exist.");
 		}
+		
 		CreditCard s = creditCard.get();
 		
 		s.setFirstName(creditCardDetails.getFirstName());
 		s.setLastName(creditCardDetails.getLastName());
 		s.setCardNumber(creditCardDetails.getCardNumber());
 		s.setExpiry(creditCardDetails.getExpiry());
-		s.setBank(creditCardDetails.getBank());
+        Bank managedBank = getManagedBank(creditCardDetails.getBank());
+		s.setBank(managedBank);
 
 		return creditCardRepository.save(s);
 	}
