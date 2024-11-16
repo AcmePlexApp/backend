@@ -3,6 +3,8 @@ package ENSF614Group1.ACME.Model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -13,30 +15,48 @@ public class Theater {
     private Long id;
 	private String name;
 	
-	@OneToMany(mappedBy = "theater", cascade = CascadeType.ALL, orphanRemoval = true)
+	@ManyToMany
+	@JoinTable(
+			name = "theater_movie",
+			joinColumns = @JoinColumn(name = "theater_id"),
+			inverseJoinColumns = @JoinColumn(name = "movie_id")
+	)
+	@JsonManagedReference // Allows the `Theater` to be serialized properly
+	private List<Movie> movies = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "theater", cascade = CascadeType.PERSIST, orphanRemoval = true)
 	private List<Seat> seats = new ArrayList<>();
 	
-	@ManyToMany(mappedBy = "theaters", cascade = CascadeType.ALL)
-	private List<Movie> movies = new ArrayList<>();
+	@OneToMany(mappedBy = "theater", cascade = CascadeType.PERSIST, orphanRemoval = true)
+	private List<Showtime> showtimes = new ArrayList<>();
 	
 	// Getters
 	public Long getId() {return id;}
 	public String getName() {return name;}
 	public List<Seat> getSeats(){return seats;}
 	public List<Movie> getMovies() {return movies;}
+	public List<Showtime> getShowtimes() {return showtimes;}
 	
 	// Setters
 	public void setName(String name) {this.name = name;}
 	public void setSeats(List<Seat> seats) {this.seats = seats;}
 	public void setMovies(List<Movie> movies ) {this.movies = movies;}
+	public void setShowtimes(List<Showtime> showtimes) {this.showtimes = showtimes;}
 	
 	// Constructors
 	public Theater() {}
 	public Theater(String name) {
 		this.name = name;
+		createSeats();
 	}
-	public Theater(Theater theater) {
-		this.name = theater.name;
+	
+	// Methods
+	private void createSeats() {
+		for(int i = 1; i <= 5; i++) {
+			for(int j = 1; j <= 5; j++) {
+				Seat seat = new Seat(i, j, this);
+				this.seats.add(seat);			}
+		}
 	}
 	
 }

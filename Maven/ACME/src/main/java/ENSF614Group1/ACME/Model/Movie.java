@@ -3,7 +3,10 @@ package ENSF614Group1.ACME.Model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,47 +25,40 @@ public class Movie {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;    
 	
-	@OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Showtime> showtimes = new ArrayList<>();
-	
     private String title;    
-    private String description;  
+    private String description;
+    
+    @Column(name = "durationInMinutes")
     private int durationInMinutes;
     
-    @ManyToMany
-	@JoinTable(
-			name = "theater_movie", 
-			joinColumns = @JoinColumn(name = "movie_id"), 
-			inverseJoinColumns = @JoinColumn(name= "theater_id")
-	)
+    @ManyToMany(mappedBy = "movies")
+    @JsonBackReference // Prevents infinite recursion when serializing `Movie`, so that the Theater objects do not appear in the serialization
     private List<Theater> theaters = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "movie")
+    private List<Showtime> showtimes = new ArrayList<>();
 
     // Getters
     public Long getId() {return id;}
     public String getTitle() {return title;}
     public String getDescription() {return description;}
-    public int getDuration() {return durationInMinutes;}
+    public int getDurationInMinutes() {return durationInMinutes;}
     public List<Showtime> getShowtimes() {return showtimes;}
     public List<Theater> getTheaters() {return theaters;}
     
     // Setters
     public void setTitle(String title) {this.title = title;}
     public void setDescription(String description) {this.description = description;}
-    public void setDuration(int duration) {this.durationInMinutes = duration;}
+    public void setDurationInMinutes(int durationInMinutes) {this.durationInMinutes = durationInMinutes;}
     public void setShowtimes(List<Showtime> showtimes) {this.showtimes = showtimes;}
     public void setTheaters(List<Theater> theaters) {this.theaters = theaters;}
     
     // Constructors
     public Movie() {}
-    public Movie(String title, String description, int duration) {
+    public Movie(String title, String description, int durationInMinutes) {
     	this.title = title;
     	this.description = description;
-    	this.durationInMinutes = duration;
+    	this.durationInMinutes = durationInMinutes;
     }
-    public Movie(Movie movie) {
-    	this.title = movie.title;
-    	this.description = movie.description;
-    	this.durationInMinutes = movie.durationInMinutes;
-    }
-
+    
 }

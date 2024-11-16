@@ -12,8 +12,8 @@ public class GlobalExceptionHandler {
 
 	// Handle EntityNotFoundException globally
 	@ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<Void> handleEntityNotFound(EntityNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    public ResponseEntity<String> handleEntityNotFound(EntityNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Entity not found.");
     }
 
     // Handle general exceptions globally
