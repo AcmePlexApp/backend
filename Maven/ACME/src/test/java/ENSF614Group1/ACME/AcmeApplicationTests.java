@@ -19,14 +19,14 @@ import jakarta.persistence.EntityManager;
 @SpringBootTest
 @Transactional // Reverts changes after each test.
 class AcmeApplicationTests {
-		    
-    @Autowired private EntityManager entityManager;  // Injecting EntityManager
-
+		   
     @Autowired private UserService userService;
     @Autowired private RegisteredUserService registeredUserService;
     @Autowired private BankService bankService;
     @Autowired private CreditCardService creditCardService;
     @Autowired private CreditService creditService;
+    @Autowired private ReceiptService receiptService;
+    @Autowired private NewMovieNotificationService newMovieNotificationService;
 
 	@Test
 	void contextLoads() {
@@ -64,6 +64,16 @@ class AcmeApplicationTests {
         assertEquals(registeredCredits.size(), TestCreditsSize); // Make sure foreign keys for credits still work.
         
 	}
+	
+	@Test
+	void createDifferentTypesOfEmails() {
+		Receipt receipt = getTestReceipt();
+		Receipt savedReceipt = receiptService.createReceipt(receipt);
+		NewMovieNotification newMovieNotification = getTestNewMovieNotification();
+		NewMovieNotification savedNewMovieNotification = newMovieNotificationService.createNewMovieNotification(newMovieNotification);
+        assertEquals(TestEmailBody, savedReceipt.getBody()); // utilizing getters from base class
+        assertEquals(TestEmailBody, savedNewMovieNotification.getBody()); // utilizing getters from base class
+	}
 
 	static String RegisteredUserKey = "registeredUser";
 	static String TestUsername = "TestUsername";
@@ -78,6 +88,9 @@ class AcmeApplicationTests {
 	static Double TestAmount = 10.0;
 	static Double TestAmountUsed = 2.0;
 	static int TestCreditsSize = 5;
+	static String TestEmailTitle = "Dear User";
+	static String TestEmailBody = "Here is the body";
+	static LocalDateTime TestEmailSentAt = LocalDateTime.now();
 
 	
 	static Bank getTestBank() {
@@ -117,6 +130,26 @@ class AcmeApplicationTests {
 				);
 		return credit;
 				
+	}
+	
+	static Receipt getTestReceipt() {
+		Receipt receipt = new Receipt (
+				TestEmailTitle,
+	    		TestEmailBody,
+	    		TestEmailSentAt,
+	    		TestEmail
+		);
+		return receipt;
+	}
+	
+	static NewMovieNotification getTestNewMovieNotification() {
+		NewMovieNotification newMovieNotification = new NewMovieNotification (
+				TestEmailTitle,
+	    		TestEmailBody,
+	    		TestEmailSentAt,
+	    		TestEmail
+		);
+		return newMovieNotification;
 	}
 	
 	void loadUserWithTestCredits(User user) {
