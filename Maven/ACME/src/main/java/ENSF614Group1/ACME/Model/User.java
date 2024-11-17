@@ -24,16 +24,22 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Credit> credits = new ArrayList<>();
     
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Ticket> tickets = new ArrayList<>();
+    
     public Long getID() {return id;}
     public String getUsername() {return username;}
     public String getPassword() {return password;}
     public String getEmail() {return email;}
     public List<Credit> getCredits() {return credits;}
+    public List<Ticket> getTickets() {return tickets;}
+
     
     public void setUsername(String username) {this.username = username;}
     public void setPassword(String password) {this.password = password;}
     public void setEmail(String email) {this.email = email;}
     public void setCredits(List<Credit> credits) {this.credits = credits;}
+    public void setTickets(List<Ticket> tickets) {this.tickets = tickets;}
     
     public void addCredit(Credit credit) {
     	credits.add(credit);
@@ -51,6 +57,25 @@ public class User {
     	if (optCredit.isPresent()) {
     		int index = credits.indexOf(optCredit.get());
     		credits.set(index, optCredit.get());
+    	}
+    }
+    
+    public void addTicket(Ticket ticket) {
+    	tickets.add(ticket);
+    }
+    
+    public void removeTicket(Ticket ticket) {
+    	Optional<Ticket> optTicket = tickets.stream().filter(cr -> cr.getID().equals(ticket.getID())).findFirst();
+    	if (optTicket.isPresent()) {
+    		tickets.remove(optTicket.get());
+    	}
+    }
+    
+    public void updateTicket(Ticket ticket) {
+    	Optional<Ticket> optTicket = tickets.stream().filter(cr -> cr.getID().equals(ticket.getID())).findFirst();
+    	if (optTicket.isPresent()) {
+    		int index = tickets.indexOf(optTicket.get());
+    		tickets.set(index, optTicket.get());
     	}
     }
     
