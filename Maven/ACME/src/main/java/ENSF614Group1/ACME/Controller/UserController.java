@@ -70,4 +70,14 @@ public class UserController {
 	public RegisteredUser register(@PathVariable Long userId, @PathVariable Long creditCardId){
 		return userService.register(userId, creditCardId);
 	}
+	
+	@PostMapping("/{userId}/applycredits/{amount}")
+	public ResponseEntity<String> applyCredits(@PathVariable Long userId, @PathVariable Double amount){
+		Double remaining = userService.applyCredits(userId, amount);
+		//Credit credit = creditService.getMovieById(movieId);
+		String response = (amount - remaining) + " credit has been applied to the requested amount. " + remaining + " of requested amount remaining.";
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+	
+	
 }

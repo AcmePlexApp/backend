@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,7 +21,7 @@ public class User {
     private String password;
     private String email;
     
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Credit> credits = new ArrayList<>();
     
     public Long getID() {return id;}
@@ -36,6 +37,21 @@ public class User {
     
     public void addCredit(Credit credit) {
     	credits.add(credit);
+    }
+    
+    public void removeCredit(Credit credit) {
+    	Optional<Credit> optCredit = credits.stream().filter(cr -> cr.getID().equals(credit.getID())).findFirst();
+    	if (optCredit.isPresent()) {
+    		credits.remove(optCredit.get());
+    	}
+    }
+    
+    public void updateCredit(Credit credit) {
+    	Optional<Credit> optCredit = credits.stream().filter(cr -> cr.getID().equals(credit.getID())).findFirst();
+    	if (optCredit.isPresent()) {
+    		int index = credits.indexOf(optCredit.get());
+    		credits.set(index, optCredit.get());
+    	}
     }
     
     public User() {

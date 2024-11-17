@@ -10,6 +10,8 @@ import jakarta.persistence.PersistenceContext;
 import ENSF614Group1.ACME.Model.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +21,7 @@ public class UserService {
 	@Autowired private UserRepository userRepository;
 	@Autowired private RegisteredUserRepository registeredUserRepository;
 	@Autowired private CreditCardRepository creditCardRepository;
+	@Autowired private CreditRepository creditRepository;
 	
     @PersistenceContext private EntityManager entityManager;
 	
@@ -102,6 +105,48 @@ public class UserService {
 		registeredUser.setCreditCard(creditCard);
 		RegisteredUser savedRegisteredUser = registeredUserRepository.save(registeredUser);
 		return savedRegisteredUser;
+	}
+	
+	@Transactional
+    public Double applyCredits(Long userID, Double amount) {
+    	Optional<User> optUser = userRepository.findById(userID);
+		if (optUser.isEmpty()) {
+			throw new EntityNotFoundException("Credits could not be applied. User does not exist.");
+		}
+		User user = optUser.get();
+		List<Credit> credits = user.getCredits();
+		credits.sort((e1, e2) -> e1.getExpires().compareTo(e2.getExpires()));
+		Double remaining = amount;
+		int numCredits = credits.size();
+		int creditIndex = 0;
+		while((remaining > 0.0) && (creditIndex < numCredits)) {
+			Double availableCredit = credits.get(creditIndex).availableMoney();
+			Double deduction = Math.min(remaining, availableCredit);
+			remaining -= deduction;
+			credits.get(creditIndex).deduct(deduction);
+			creditRepository.save(credits.get(creditIndex));
+			user.updateCredit(credits.get(creditIndex));
+			creditIndex += 1;
+		}
+		User savedUser = userRepository.save(user);
+		cleanUpExpiredOrUsedCredits(savedUser);
+		return remaining;
+	}
+	
+	@Transactional
+	public void cleanUpExpiredOrUsedCredits(User user) {
+		List<Credit> credits = user.getCredits();
+		List<Credit> remainingCredits = new ArrayList<>();
+		int numCredits = credits.size();
+		for(int i=0;i<numCredits;i++) {
+			if(credits.get(i).isValid()) {
+				remainingCredits.add(credits.get(i));
+			} else {
+				creditRepository.delete(credits.get(i));
+			}
+		}
+		user.setCredits(remainingCredits);
+		userRepository.save(user);
 	}
     
 }

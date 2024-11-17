@@ -46,4 +46,16 @@ public class Credit {
     	this.user = user;
     }
     
+    public double availableMoney() {
+    	return isValid() ? amount - amountUsed : 0.0;
+    }
+    
+    public void deduct(Double amount) {
+    	amountUsed = amountUsed + amount;
+    }
+    
+    public boolean isValid() {
+    	return (amount - amountUsed > 0.01) && this.expires.isAfter(LocalDateTime.now());
+    }
+    
 }
