@@ -78,5 +78,8 @@ public class User {
     	this.email = user.email;
     }
     
+    public boolean isRegistered() {
+    	return false;
+    }
 
 }

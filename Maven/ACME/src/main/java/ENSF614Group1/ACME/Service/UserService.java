@@ -41,6 +41,11 @@ public class UserService {
 		}
 		return user.get();
 	}
+	
+	public Boolean isUserRegistered(long id) {
+		User user = getUserById(id);
+		return user.isRegistered();
+	}
 
 	
 	@Transactional

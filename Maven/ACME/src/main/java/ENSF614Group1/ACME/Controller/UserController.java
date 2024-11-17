@@ -74,9 +74,13 @@ public class UserController {
 	@PostMapping("/{userId}/applycredits/{amount}")
 	public ResponseEntity<String> applyCredits(@PathVariable Long userId, @PathVariable Double amount){
 		Double remaining = userService.applyCredits(userId, amount);
-		//Credit credit = creditService.getMovieById(movieId);
 		String response = (amount - remaining) + " credit has been applied to the requested amount. " + remaining + " of requested amount remaining.";
 		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+	
+	@GetMapping("/{userId}/registered")
+	public boolean getRegisteredByID(@PathVariable Long userId) {
+		return userService.isUserRegistered(userId);
 	}
 	
 	

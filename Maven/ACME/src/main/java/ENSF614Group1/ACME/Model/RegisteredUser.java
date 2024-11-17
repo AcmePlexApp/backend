@@ -39,4 +39,12 @@ public class RegisteredUser extends User {
     	this.creditCard = creditCard;
     }
     
+    public boolean isMembershipValid() {
+    	return this.membershipExpires.isAfter(LocalDateTime.now());
+    }
+    
+    @Override
+    public boolean isRegistered() {
+    	return true;
+    }
 }
