@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 
 @Entity
 public class Credit {
+	
+	static int MONTHS_UNTIL_EXPIRY = 12;
+	
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -14,7 +17,7 @@ public class Credit {
     private LocalDateTime expires;
     
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")  // Foreign key column
     private User user;
     
     public Long getID() {return id;}
@@ -34,7 +37,25 @@ public class Credit {
     	this.amount = amount;
     	this.amountUsed = amountUsed;
     	this.expires = expires;
+    	this.user = user;    }
+    
+    public Credit(Double amount, User user) {
+    	this.amount = amount;
+    	this.amountUsed = 0.0;
+    	this.expires = LocalDateTime.now().plusMonths(MONTHS_UNTIL_EXPIRY);
     	this.user = user;
+    }
+    
+    public double availableMoney() {
+    	return isValid() ? amount - amountUsed : 0.0;
+    }
+    
+    public void deduct(Double amount) {
+    	amountUsed = amountUsed + amount;
+    }
+    
+    public boolean isValid() {
+    	return (amount - amountUsed > 0.01) && this.expires.isAfter(LocalDateTime.now());
     }
     
 }

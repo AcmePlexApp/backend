@@ -10,14 +10,17 @@ import jakarta.persistence.PersistenceContext;
 import ENSF614Group1.ACME.Model.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ReceiptService {
 
-	@Autowired
-	private ReceiptRepository receiptRepository;
+	@Autowired private ReceiptRepository receiptRepository;
+	@Autowired private UserRepository userRepository;
+	@Autowired private CreditCardRepository creditCardRepository;
+
 	
 	@Transactional
 	public Receipt createReceipt(Receipt receipt) {
@@ -55,5 +58,31 @@ public class ReceiptService {
 		}
 		receiptRepository.deleteById(id);
 	}
+	
+//	@Transactional
+//	public void createPurchaseReceipt(User user, CreditCard creditCard, List<Ticket> tickets) {
+//		Optional<User> optUser = userRepository.findById(user.getID());
+//		if (optUser.isEmpty()) {
+//			throw new EntityNotFoundException("User does not exist.");
+//		}
+//		User forUser = optUser.get();
+//		
+//		Optional<CreditCard> optCreditCard = creditCardRepository.findById(creditCard.getID());
+//		if (optCreditCard.isEmpty()) {
+//			throw new EntityNotFoundException("Credit Card does not exist.");
+//		}
+//		CreditCard withCreditCard = optCreditCard.get();
+//		
+//		List<Ticket> forTickets = new ArrayList<>();
+//		for (Ticket ticket : payment.getTickets()) {
+//			Optional<Ticket> optTicket = ticketRepository.findById(ticket.getID());
+//			if(optTicket.isEmpty()) {
+//				throw new EntityNotFoundException("Cannot Create Purchase Receipt.  Ticket does not exist.");
+//			}
+//			Ticket tic = optTicket.get();
+//			forTickets.add(tic);
+//		}
+//		
+//	}
     
 }

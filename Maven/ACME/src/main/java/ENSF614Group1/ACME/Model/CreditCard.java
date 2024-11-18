@@ -1,9 +1,5 @@
 package ENSF614Group1.ACME.Model;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import jakarta.persistence.*;
 
 @Entity
@@ -16,7 +12,7 @@ public class CreditCard {
     private String cardNumber;
     private String expiry;
     
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name = "bank_id", referencedColumnName = "id", nullable = false)
 	private Bank bank;
     
@@ -49,6 +45,13 @@ public class CreditCard {
     	this.bank = bank;
     }
     
+    public void charge(Double amount) {
+    	//System.out.println("CHARGED " + amount + " TO CREDITCARD " + cardNumber);
+    }
     
+    public void refund(Double amount) {
+    	//System.out.println("REFUNDED " + amount + " TO CREDITCARD " + cardNumber);
+
+    }
     
 }

@@ -16,12 +16,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import ENSF614Group1.ACME.Model.RegisteredUser;
+import ENSF614Group1.ACME.Model.User;
 import ENSF614Group1.ACME.Service.RegisteredUserService;
 import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/registeredUser")
 public class RegisteredUserController {
+	
+	
 	
 	@Autowired
 	private RegisteredUserService registeredUserService;

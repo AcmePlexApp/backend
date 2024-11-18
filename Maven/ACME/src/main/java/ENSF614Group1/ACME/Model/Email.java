@@ -33,7 +33,7 @@ public class Email {
     public void setToEmail(String toEmail) {this.toEmail = toEmail;}
 
     public Email() {
-    	
+    	sentAt = LocalDateTime.now();
     }
     
     public Email(
@@ -41,7 +41,7 @@ public class Email {
     		String body,
     		LocalDateTime sentAt,
     		String toEmail
-    		)
+    	)
     {
     	this.title = title;
     	this.body = body;
