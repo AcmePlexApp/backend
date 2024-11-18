@@ -40,6 +40,7 @@ public class TheaterService {
 		return theater.get();
 	}
 	
+	// Does not alter seats or showtimes
 	@Transactional
 	public Theater updateTheater(Long id, Theater theaterDetails) {
 		Optional<Theater> theater = theaterRepository.findById(id);
@@ -47,9 +48,8 @@ public class TheaterService {
 			throw new EntityNotFoundException("Theater does not exist.");
 		}
 		Theater t = theater.get();
-		t.setName(theaterDetails.getName());
-		t.setSeats(theaterDetails.getSeats());
-		t.setMovies(theaterDetails.getMovies());
+		t.setName(theaterDetails.getName());;
+		t.setMovie(theaterDetails.getMovie());
 		return theaterRepository.save(t);
 	}
 	
@@ -73,10 +73,8 @@ public class TheaterService {
 		}
 		Theater t = theater.get();
 		Movie m = movie.get();
-		t.getMovies().add(m);
-		m.getTheaters().add(t);
+		t.setMovie(m);
 		theaterRepository.save(t);
-		movieRepository.save(m);
 	}
 	
 	@Transactional
@@ -87,13 +85,14 @@ public class TheaterService {
 		}
 		Optional<Movie> movie = movieRepository.findById(movieId);
 		if (movie.isEmpty()) {
-			throw new EntityNotFoundException("Theater does not exist.");
+			throw new EntityNotFoundException("Movie does not exist.");
 		}
 		Theater t = theater.get();
 		Movie m = movie.get();
-		t.getMovies().remove(m);
-		m.getTheaters().remove(t);
+		if(t.getMovie() == null || !t.getMovie().getId().equals(m.getId())) {
+			throw new EntityNotFoundException("Movie not at theater.");
+		}
+		t.setMovie(null);
 		theaterRepository.save(t);
-		movieRepository.save(m);
 	}
 }

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ENSF614Group1.ACME.Model.Movie;
 import ENSF614Group1.ACME.Model.Showtime;
+import ENSF614Group1.ACME.Model.Theater;
 import ENSF614Group1.ACME.Repository.ShowtimeRepository;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -35,8 +36,8 @@ public class ShowtimeService {
 		return showtime.get();
 	}
 	
-	public List<Showtime> getShowtimesByMovie(Movie movie){
-		return showtimeRepository.findByMovie(movie);
+	public List<Showtime> getShowtimesInTheater(Theater theater){
+		return showtimeRepository.findByTheater(theater);
 	}
 	
 	@Transactional

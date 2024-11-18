@@ -8,6 +8,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Showtime {
 
@@ -18,29 +20,23 @@ public class Showtime {
 	private LocalTime timeOfDay;
 	
 	@ManyToOne
-	@JoinColumn(name = "movie_id", nullable = false)
-	private Movie movie;
-	
-	@ManyToOne
 	@JoinColumn(name = "theater_id", nullable = false)
+	@JsonIgnore
 	private Theater theater;
 	
 	// Getters
 	public Long getId() {return id;}
 	public LocalTime getTimeOfDay() {return timeOfDay;}
-	public Movie getMovie() {return movie;}
 	public Theater getTheater() {return theater;}
 	
 	// Setters
 	public void setTimeOfDay(LocalTime timeOfDay) {this.timeOfDay = timeOfDay;}
-	public void setMovie(Movie movie) {this.movie = movie;}
 	public void setTheater(Theater theater) {this.theater = theater;}
 	
 	// Constructors
 	public Showtime() {}
-	public Showtime(LocalTime time, Movie movie, Theater theater) {
+	public Showtime(LocalTime time, Theater theater) {
 		this.timeOfDay = time;
-		this.movie = movie;
         this.theater = theater;
 	}
 	
