@@ -15,19 +15,18 @@ public class Payment {
     private Double amount;
     private Boolean refunded = false;
     
-    @OneToOne()
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @ManyToOne()
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
 	private User user;
     
-    
-    @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL)
+    @OneToMany()
     private List<Ticket> tickets = new ArrayList<>();
     
     @ManyToOne
     @JoinColumn(name = "creditcard_id", referencedColumnName = "id", nullable = false) // No unique constraint
     private CreditCard creditCard;
     
-    @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL)
+    @OneToMany()
     private List<Receipt> receipts = new ArrayList<>();
     
     public Long getID() {return id;}

@@ -10,13 +10,9 @@ public class Ticket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @OneToOne()
+    @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
 	private User user;
-    
-    @ManyToOne
-    @JoinColumn(name = "payment_id")  // Foreign key column
-    private Payment payment;
     
 //    private Theatre theatre;
 //    private Seat seat;
@@ -25,16 +21,13 @@ public class Ticket {
     public Long getID() {return id;}
     public User getUser() {return user;}
     public void setUser(User user) {this.user = user;}
-    public Payment getPayment() {return payment;}
-    public void setPayment(Payment payment) {this.payment = payment;}
     
     
     public Ticket() {
     	
     }
     
-    public Ticket(Payment payment, User user) {
-    	this.payment = payment;
+    public Ticket(User user) {
     	this.user = user;
     }
     

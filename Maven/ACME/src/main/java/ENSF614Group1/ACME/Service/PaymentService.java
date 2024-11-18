@@ -23,7 +23,6 @@ public class PaymentService {
 	@Autowired private ReceiptRepository receiptRepository;
 	@Autowired private CreditCardRepository creditCardRepository;
 
-	
 	@Transactional
 	public Payment createPayment(Payment payment) {
 		Optional<User> optUser = userRepository.findById(payment.getUser().getID());
@@ -63,9 +62,33 @@ public class PaymentService {
 		payment.setUser(user);
 		payment.setCreditCard(creditCard);
 		payment.setTickets(tickets);
-		payment.setReceipts(receipts);
-		
+		Receipt receipt = createPurchaseReceipt(payment);
+		List<Receipt> receiptList = new ArrayList<>();
+		receiptList.add(receipt);
+		payment.setReceipts(receiptList);
 		return paymentRepository.save(payment);
+	}
+	
+	public Receipt createPurchaseReceipt(Payment payment) {
+		User user = payment.getUser();
+		String emailAddress = user.getEmail();
+		String username = user.getUsername();
+		List<Ticket> tickets = payment.getTickets();
+		CreditCard creditCard = payment.getCreditCard();
+		String title = "Purchase Receipt for " + tickets.size() + " tickets for " + username;
+		String body = "Paid on Credit Card #" + creditCard.getCardNumber() + "\n\n";
+		for(Ticket ticket: tickets) {
+			body.concat("Ticket#" + ticket.getID() + "\n");
+			//Seat seat = ticket.getSeat();
+			//Theater theatre = ticket.getTheater();
+			//Showtime showtime = ticket.getShowtime();
+			body.concat("Theater " + "TBD - Need to hook up in database" + "\n");
+			body.concat("Showtime " + "TBD - Need to hook up in database" + "\n");
+			body.concat("Seat " + "TBD - Need to hook up in database" + "\n");
+			body.concat("TBD - need to actually send an email");
+		}
+		Receipt purchaseReceipt = new Receipt(title, body, LocalDateTime.now(), emailAddress);
+		return receiptRepository.save(purchaseReceipt);
 	}
 	
 	public List<Payment> getAllPayments(){
@@ -94,7 +117,7 @@ public class PaymentService {
 		s.setAmount(paymentDetails.getAmount());
 		s.setRefunded(paymentDetails.getRefunded());
 		s.setReceipts(paymentDetails.getReceipts());
-		//s.setTickets(paymentDetails.getTickets());
+		s.setTickets(paymentDetails.getTickets());
 		s.setCreditCard(paymentDetails.getCreditCard());
 
 

@@ -16,11 +16,20 @@ import java.util.Optional;
 @Service
 public class TicketService {
 
-	@Autowired
-	private TicketRepository ticketRepository;
+	@Autowired private TicketRepository ticketRepository;
+	@Autowired private UserRepository userRepository;
+	@Autowired private PaymentRepository paymentRepository;
+
 	
 	@Transactional
 	public Ticket createTicket(Ticket ticket) {
+		Optional<User> optUser = userRepository.findById(ticket.getUser().getID());
+		if(optUser.isEmpty()) {
+			throw new EntityNotFoundException("User does not exist.");
+		}
+		User user = optUser.get();
+		ticket.setUser(user);
+		
 		return ticketRepository.save(ticket);
 	}
 	
