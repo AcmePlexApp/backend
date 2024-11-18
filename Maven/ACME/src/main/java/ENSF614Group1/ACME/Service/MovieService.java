@@ -39,10 +39,6 @@ public class MovieService {
 		return movie.get();
 	}
 	
-	public List<Movie> getMoviesInTheater(Theater theater){
-		return movieRepository.findByTheaters(theater);
-	}
-	
 	@Transactional
 	public Movie updateMovieById(Long id, Movie movieDetails) {
 		Optional<Movie> movie = movieRepository.findById(id);
@@ -53,8 +49,6 @@ public class MovieService {
 		m.setTitle(movieDetails.getTitle());
 		m.setDescription(movieDetails.getDescription());
 		m.setDurationInMinutes(movieDetails.getDurationInMinutes());
-		m.setShowtimes(movieDetails.getShowtimes());
-		m.setTheaters(movieDetails.getTheaters());
 		return movieRepository.save(m);
 	}
 	

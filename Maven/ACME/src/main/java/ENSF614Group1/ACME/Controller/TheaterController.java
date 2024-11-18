@@ -33,13 +33,7 @@ public class TheaterController {
 	private TheaterService theaterService;
 	
 	@Autowired
-	private SeatService seatService;
-	
-	@Autowired
 	private MovieService movieService;
-	
-	@Autowired
-	private ShowtimeService showtimeService;
 	
 	@PostMapping
 	public ResponseEntity<Theater> createTheater(@RequestBody Theater theater) {
@@ -47,16 +41,17 @@ public class TheaterController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(createdTheater);
 	}
 	
-	@PostMapping("/{theaterId}/movies/{movieId}")
+	@PostMapping("/{theaterId}/{movieId}")
 	public ResponseEntity<String> addMovieToTheater(@PathVariable Long theaterId, @PathVariable Long movieId){
 		theaterService.addMovieToTheater(theaterId, movieId);
 		Theater theater = theaterService.getTheaterById(theaterId);
 		Movie movie = movieService.getMovieById(movieId);
-		String response = movie.getTitle() + " movie has been added to " + theater.getName() + " theater.";
+		String response = movie.getTitle() + " has been added to " + theater.getName();
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	
-	// add showtime to theater
+	// Potentially add post methods for adding seats and showtime. At creation, Theaters generate generic seats and showtimes.
+	// Currently setup so that seats and showtimes are cannot be altered.
 	
 	@GetMapping
 	public ResponseEntity<List<Theater>> getAllTheaters(){
@@ -69,19 +64,6 @@ public class TheaterController {
 	    return ResponseEntity.status(HttpStatus.OK).body(theater);
 	}
 	
-	@GetMapping("/{id}/seats")
-	public ResponseEntity<List<Seat>> getAllSeatsInTheater(@PathVariable Long id){
-		Theater theater = theaterService.getTheaterById(id);
-		List<Seat> seats = seatService.getSeatsInTheater(theater);
-		return ResponseEntity.status(HttpStatus.OK).body(seats);
-	}
-	
-	@GetMapping("/{id}/movies")
-	public ResponseEntity<List<Movie>> getAllMoviesInTheater(@PathVariable Long id){
-		Theater theater = theaterService.getTheaterById(id);
-		List<Movie> movies = movieService.getMoviesInTheater(theater);
-		return ResponseEntity.status(HttpStatus.OK).body(movies);
-	}
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<Theater> updateTheaterById(@PathVariable Long id, @RequestBody Theater theaterDetails){
@@ -95,14 +77,12 @@ public class TheaterController {
 		return ResponseEntity.status(HttpStatus.OK).body("Theater successfully removed.");
 	}
 	
-	@DeleteMapping("/{theaterId}/movies/{movieId}")
+	@DeleteMapping("/{theaterId}/{movieId}")
 	public ResponseEntity<String> deleteMovieFromTheater(@PathVariable Long theaterId, @PathVariable Long movieId){
-		theaterService.deleteMovieFromTheater(theaterId, movieId);
 		Theater theater = theaterService.getTheaterById(theaterId);
 		Movie movie = movieService.getMovieById(movieId);
-		String response = movie.getTitle() + " movie has been removed from " + theater.getName() + " theater.";
+		theaterService.deleteMovieFromTheater(theaterId, movieId);
+		String response = movie.getTitle() + " has been removed from " + theater.getName();
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
-	
-	// delete showtime from theater
 }

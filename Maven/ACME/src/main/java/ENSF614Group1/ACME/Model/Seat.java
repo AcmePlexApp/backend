@@ -1,5 +1,7 @@
 package ENSF614Group1.ACME.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,6 +20,7 @@ public class Seat {
 	
 	@ManyToOne
 	@JoinColumn(name = "theater_id", nullable = false)
+	@JsonIgnore
 	private Theater theater;
 	
 	// Getters
@@ -27,7 +30,7 @@ public class Seat {
 	
 	// Setters
 	public void setSeatRow(int seatRow) {this.seatRow = seatRow;}
-	public void setSeatNumber(int seat) {this.seatNumber = seat;}
+	public void setSeatNumber(int seatNumber) {this.seatNumber = seatNumber;}
 
 	// Constructors
 	public Seat() {}
