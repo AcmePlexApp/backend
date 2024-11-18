@@ -18,7 +18,10 @@ public class TicketService {
 
 	@Autowired private TicketRepository ticketRepository;
 	@Autowired private UserRepository userRepository;
-	@Autowired private PaymentRepository paymentRepository;
+	@Autowired private TheaterRepository theaterRepository;
+	@Autowired private SeatRepository seatRepository;
+	@Autowired private ShowtimeRepository showtimeRepository;
+	
 
 	
 	@Transactional
@@ -30,6 +33,23 @@ public class TicketService {
 		User user = optUser.get();
 		ticket.setUser(user);
 		
+		return ticketRepository.save(ticket);
+	}
+	
+	public Ticket purchaseTicket(Long userId, Long theaterId, Long seatId, Long showtimeId) {
+		Optional<User> user = userRepository.findById(userId);
+		Optional<Theater> theater = theaterRepository.findById(theaterId);
+		Optional<Seat> seat = seatRepository.findById(seatId);
+		Optional<Showtime> showtime = showtimeRepository.findById(showtimeId);
+		if (user.isEmpty() || theater.isEmpty() || seat.isEmpty() || showtime.isEmpty()) {
+			throw new EntityNotFoundException("Entity does not exist.");
+		}
+		
+		if (seatIsBooked(seat.get())) {
+			throw new RuntimeException("Seat is already booked.");
+		}
+		
+		Ticket ticket = new Ticket(user.get(), theater.get(), seat.get(), showtime.get());
 		return ticketRepository.save(ticket);
 	}
 	
@@ -63,6 +83,11 @@ public class TicketService {
 			throw new EntityNotFoundException("Ticket does not exist.");
 		}
 		ticketRepository.deleteById(id);
+	}
+	
+	private boolean seatIsBooked(Seat seat) {
+		// need to add logic
+		return false;
 	}
     
 }
