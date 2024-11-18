@@ -12,7 +12,7 @@ public class CreditCard {
     private String cardNumber;
     private String expiry;
     
-    @OneToOne()
+    @ManyToOne()
     @JoinColumn(name = "bank_id", referencedColumnName = "id", nullable = false)
 	private Bank bank;
     
