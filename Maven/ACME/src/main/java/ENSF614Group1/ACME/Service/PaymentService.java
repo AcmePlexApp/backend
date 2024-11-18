@@ -58,7 +58,7 @@ public class PaymentService {
 			tickets.add(tic);
 		}
 		
-		
+		payment.getCreditCard().charge(payment.getAmount());
 		payment.setUser(user);
 		payment.setCreditCard(creditCard);
 		payment.setTickets(tickets);
@@ -69,6 +69,24 @@ public class PaymentService {
 		return paymentRepository.save(payment);
 	}
 	
+	@Transactional
+	public Payment refundPayment(Long paymentId) {
+		Optional<Payment> optPayment = paymentRepository.findById(paymentId);
+		if(optPayment.isEmpty()) {
+			throw new EntityNotFoundException("Cannot Refund Payment.  Payment does not exist.");
+		}
+		Payment payment = optPayment.get();
+		if (payment.getRefunded()) {
+			throw new EntityNotFoundException("Cannot refund payment.  Payment is already refunded.");
+		}
+		payment.getCreditCard().refund(payment.getAmount());
+		payment.setRefunded(true);
+		Receipt refundReceipt = createRefundReceipt(payment);
+		payment.addReceipt(refundReceipt);
+		return paymentRepository.save(payment);
+	}
+	
+	@Transactional
 	public Receipt createPurchaseReceipt(Payment payment) {
 		User user = payment.getUser();
 		String emailAddress = user.getEmail();
@@ -78,17 +96,40 @@ public class PaymentService {
 		String title = "Purchase Receipt for " + tickets.size() + " tickets for " + username;
 		String body = "Paid on Credit Card #" + creditCard.getCardNumber() + "\n\n";
 		for(Ticket ticket: tickets) {
-			body.concat("Ticket#" + ticket.getID() + "\n");
+			body = body.concat("Ticket#" + ticket.getID() + "\n");
 			//Seat seat = ticket.getSeat();
 			//Theater theatre = ticket.getTheater();
 			//Showtime showtime = ticket.getShowtime();
-			body.concat("Theater " + "TBD - Need to hook up in database" + "\n");
-			body.concat("Showtime " + "TBD - Need to hook up in database" + "\n");
-			body.concat("Seat " + "TBD - Need to hook up in database" + "\n");
-			body.concat("TBD - need to actually send an email");
+			body = body.concat("Theater " + "TBD - Need to hook up in database" + "\n");
+			body = body.concat("Showtime " + "TBD - Need to hook up in database" + "\n");
+			body = body.concat("Seat " + "TBD - Need to hook up in database" + "\n");
+			body = body.concat("TBD - need to actually send an email");
 		}
 		Receipt purchaseReceipt = new Receipt(title, body, LocalDateTime.now(), emailAddress);
 		return receiptRepository.save(purchaseReceipt);
+	}
+	
+	@Transactional
+	public Receipt createRefundReceipt(Payment payment) {
+		User user = payment.getUser();
+		String emailAddress = user.getEmail();
+		String username = user.getUsername();
+		List<Ticket> tickets = payment.getTickets();
+		CreditCard creditCard = payment.getCreditCard();
+		String title = "Refund Receipt for " + tickets.size() + " tickets for " + username;
+		String body = "Redunded on Credit Card #" + creditCard.getCardNumber() + "\n\n";
+		for(Ticket ticket: tickets) {
+			body = body.concat("Ticket#" + ticket.getID() + "\n");
+			//Seat seat = ticket.getSeat();
+			//Theater theatre = ticket.getTheater();
+			//Showtime showtime = ticket.getShowtime();
+			body = body.concat("Theater " + "TBD - Need to hook up in database" + "\n");
+			body = body.concat("Showtime " + "TBD - Need to hook up in database" + "\n");
+			body = body.concat("Seat " + "TBD - Need to hook up in database" + "\n");
+			body = body.concat("TBD - need to actually send an email");
+		}
+		Receipt refundReceipt = new Receipt(title, body, LocalDateTime.now(), emailAddress);
+		return receiptRepository.save(refundReceipt);
 	}
 	
 	public List<Payment> getAllPayments(){

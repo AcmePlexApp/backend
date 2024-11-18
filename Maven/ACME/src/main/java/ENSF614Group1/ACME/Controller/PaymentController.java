@@ -49,6 +49,12 @@ public class PaymentController {
 		return ResponseEntity.status(HttpStatus.OK).body(payment);
 	}
 	
+	@PutMapping("/{id}/refund")
+	public ResponseEntity<Payment> refundById(@PathVariable Long id){
+		Payment payment = paymentService.refundPayment(id);
+		return ResponseEntity.status(HttpStatus.OK).body(payment);
+	}
+	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deletePaymentById(@PathVariable Long id){
 		paymentService.deletePayment(id);

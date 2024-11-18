@@ -1,6 +1,9 @@
 package ENSF614Group1.ACME.Model;
 
+
 import java.time.LocalDateTime;
+import java.util.function.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +22,7 @@ public class Payment {
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
 	private User user;
     
-    @OneToMany()
+    @ManyToMany()
     private List<Ticket> tickets = new ArrayList<>();
     
     @ManyToOne
@@ -63,23 +66,23 @@ public class Payment {
     	receipts.add(receipt);
     }
     
-    public void removeReceipt(Receipt receipt) {
-    	Optional<Receipt> optReceipt = receipts.stream().filter(obj -> obj.getID().equals(receipt.getID())).findFirst();
-    	if (optReceipt.isPresent()) {
-    		receipts.remove(optReceipt.get());
-    	}
-    }
+//    public void removeReceipt(Receipt receipt) {
+//    	Optional<Receipt> optReceipt = receipts.stream().filter(obj -> obj.getID().equals(receipt.getID())).findFirst();
+//    	if (optReceipt.isPresent()) {
+//    		receipts.remove(optReceipt.get());
+//    	}
+//    }
     
     public void addTicket(Ticket ticket) {
     	tickets.add(ticket);
     }
     
-    public void removeTicket(Ticket ticket) {
-    	Optional<Ticket> optTicket = tickets.stream().filter(obj -> obj.getID().equals(ticket.getID())).findFirst();
-    	if (optTicket.isPresent()) {
-    		tickets.remove(optTicket.get());
-    	}
-    }
+//    public void removeTicket(Ticket ticket) {
+//    	Optional<Ticket> optTicket = tickets.stream().filter(obj -> obj.getID().equals(ticket.getID())).findFirst();
+//    	if (optTicket.isPresent()) {
+//    		tickets.remove(optTicket.get());
+//    	}
+//    }
     
     
 }
