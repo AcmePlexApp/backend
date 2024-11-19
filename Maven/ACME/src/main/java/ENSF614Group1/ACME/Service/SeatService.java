@@ -35,9 +35,9 @@ public class SeatService {
 		return seat.get();
 	}
 	
-	public List<Seat> getSeatsInTheater(Theater theater){
-		return seatRepository.findByTheater(theater);
-	}
+//	public List<Seat> getSeatsInTheater(Theater theater){
+//		return seatRepository.findByTheater(theater);
+//	}
 	
 	@Transactional
 	public Seat updateSeat(Long id, Seat seatDetails) {

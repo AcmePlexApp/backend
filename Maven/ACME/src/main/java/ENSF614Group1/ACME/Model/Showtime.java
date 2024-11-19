@@ -1,12 +1,18 @@
 package ENSF614Group1.ACME.Model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -24,20 +30,34 @@ public class Showtime {
 	@JsonIgnore
 	private Theater theater;
 	
+	@OneToMany(mappedBy = "showtime", cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.LAZY)
+	private List<Seat> seats = new ArrayList<>();
+	
 	// Getters
 	public Long getId() {return id;}
 	public LocalTime getTimeOfDay() {return timeOfDay;}
 	public Theater getTheater() {return theater;}
+	public List<Seat> getSeats(){return seats;}
 	
 	// Setters
 	public void setTimeOfDay(LocalTime timeOfDay) {this.timeOfDay = timeOfDay;}
 	public void setTheater(Theater theater) {this.theater = theater;}
+	public void setSeats(List<Seat> seats) {this.seats = seats;}
 	
 	// Constructors
 	public Showtime() {}
 	public Showtime(LocalTime time, Theater theater) {
 		this.timeOfDay = time;
         this.theater = theater;
+        createSeats();
 	}
 	
+	// Methods
+	private void createSeats() {
+		for(int i = 1; i <= 5; i++) {
+			for(int j = 1; j <= 5; j++) {
+				Seat seat = new Seat(i, j, this);
+				this.seats.add(seat);			}
+		}
+	}
 }

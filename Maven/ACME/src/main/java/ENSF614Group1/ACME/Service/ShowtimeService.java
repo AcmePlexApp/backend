@@ -36,9 +36,9 @@ public class ShowtimeService {
 		return showtime.get();
 	}
 	
-	public List<Showtime> getShowtimesInTheater(Theater theater){
-		return showtimeRepository.findByTheater(theater);
-	}
+//	public List<Showtime> getShowtimesInTheater(Theater theater){
+//		return showtimeRepository.findByTheater(theater);
+//	}
 	
 	@Transactional
 	public Showtime updateShowtimeById(Long id, Showtime showtimeDetails) {
