@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
+import ENSF614Group1.ACME.Helpers.Views;
 import ENSF614Group1.ACME.Model.Movie;
 import ENSF614Group1.ACME.Model.Seat;
 import ENSF614Group1.ACME.Model.Showtime;
@@ -36,12 +39,14 @@ public class TheaterController {
 	private MovieService movieService;
 	
 	@PostMapping
+	@JsonView(Views.Basic.class)
 	public ResponseEntity<Theater> createTheater(@RequestBody Theater theater) {
 		Theater createdTheater = theaterService.createTheater(theater.getName());
 		return ResponseEntity.status(HttpStatus.CREATED).body(createdTheater);
 	}
 	
 	@PostMapping("/{theaterId}/{movieId}")
+	@JsonView(Views.Basic.class)
 	public ResponseEntity<String> addMovieToTheater(@PathVariable Long theaterId, @PathVariable Long movieId){
 		theaterService.addMovieToTheater(theaterId, movieId);
 		Theater theater = theaterService.getTheaterById(theaterId);
@@ -54,11 +59,13 @@ public class TheaterController {
 	// Currently setup so that seats and showtimes are cannot be altered.
 	
 	@GetMapping
+	@JsonView(Views.Basic.class)
 	public ResponseEntity<List<Theater>> getAllTheaters(){
 		return ResponseEntity.status(HttpStatus.OK).body(theaterService.getAllTheaters());
 	}
 	
 	@GetMapping("/{id}")
+	@JsonView(Views.Basic.class)
 	public ResponseEntity<Theater> getTheaterById(@PathVariable Long id) {
 	    Theater theater = theaterService.getTheaterById(id);
 	    return ResponseEntity.status(HttpStatus.OK).body(theater);
@@ -66,6 +73,7 @@ public class TheaterController {
 	
 	
 	@PutMapping("/{id}")
+	@JsonView(Views.Basic.class)
 	public ResponseEntity<Theater> updateTheaterById(@PathVariable Long id, @RequestBody Theater theaterDetails){
 		Theater theater = theaterService.updateTheater(id, theaterDetails);
 		return ResponseEntity.status(HttpStatus.OK).body(theater);

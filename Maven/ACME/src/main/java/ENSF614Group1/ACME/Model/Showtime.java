@@ -15,14 +15,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import ENSF614Group1.ACME.Helpers.Views;
 
 @Entity
 public class Showtime {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JsonView(Views.Basic.class)
     private Long id;
 	
+	@JsonView(Views.Basic.class)
 	private LocalTime timeOfDay;
 	
 	@ManyToOne
@@ -31,6 +36,7 @@ public class Showtime {
 	private Theater theater;
 	
 	@OneToMany(mappedBy = "showtime", cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JsonView(Views.Detailed.class)
 	private List<Seat> seats = new ArrayList<>();
 	
 	// Getters
@@ -60,4 +66,5 @@ public class Showtime {
 				this.seats.add(seat);			}
 		}
 	}
+	
 }

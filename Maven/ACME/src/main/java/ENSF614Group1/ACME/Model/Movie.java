@@ -3,6 +3,10 @@ package ENSF614Group1.ACME.Model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import ENSF614Group1.ACME.Helpers.Views;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,13 +18,18 @@ public class Movie {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JsonView(Views.Basic.class)
     private Long id;    
 	
 	@OneToMany(mappedBy = "movie")
+	@JsonView(Views.Detailed.class)
 	private List<Theater> theaters = new ArrayList<>();
 	
-    private String title;    
+	@JsonView(Views.Basic.class)
+    private String title;   
+	@JsonView(Views.Basic.class)
     private String description;
+	@JsonView(Views.Basic.class)
     private int durationInMinutes;
     
     // Getters

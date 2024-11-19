@@ -4,8 +4,12 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 
+import ENSF614Group1.ACME.Helpers.Views;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,15 +17,19 @@ public class Theater {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JsonView(Views.Basic.class)
     private Long id;
+	
+	@JsonView(Views.Basic.class)
 	private String name;
 	
 	@ManyToOne
 	@JoinColumn(name = "movie_id", nullable = true)
-	@JsonIgnore
+	@JsonView(Views.Basic.class)
 	private Movie movie;
 	
 	@OneToMany(mappedBy = "theater", cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JsonView(Views.Basic.class)
 	private List<Showtime> showtimes = new ArrayList<>();
 	
 	// Getters

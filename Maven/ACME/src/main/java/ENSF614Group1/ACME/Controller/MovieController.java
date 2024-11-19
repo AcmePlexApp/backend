@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
+import ENSF614Group1.ACME.Helpers.Views;
 import ENSF614Group1.ACME.Model.Movie;
 import ENSF614Group1.ACME.Service.MovieService;
 
@@ -26,17 +29,20 @@ public class MovieController {
 	
 	
 	@PostMapping
+	@JsonView(Views.Basic.class)
 	public ResponseEntity<Movie> createMovie(@RequestBody Movie movie){
 		Movie createdMovie = movieService.createMovie(movie);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createdMovie);
 	}
 	
 	@GetMapping
+	@JsonView(Views.Basic.class)
 	public ResponseEntity<List<Movie>> getAllMovies(){
 		return ResponseEntity.status(HttpStatus.OK).body(movieService.getAllMovies());
 	}
 	
 	@GetMapping("/{id}")
+	@JsonView(Views.Basic.class)
 	public ResponseEntity<Movie> getMovieById(@PathVariable Long id){
 		Movie movie = movieService.getMovieById(id);
 		return ResponseEntity.status(HttpStatus.OK).body(movie);
@@ -44,6 +50,7 @@ public class MovieController {
 	
 	
 	@PutMapping("/{id}")
+	@JsonView(Views.Basic.class)
 	public ResponseEntity<Movie> updateMovieById(@PathVariable Long id, @RequestBody Movie movieDetails){
 		Movie movie = movieService.updateMovieById(id, movieDetails);
 		return ResponseEntity.status(HttpStatus.OK).body(movie);
