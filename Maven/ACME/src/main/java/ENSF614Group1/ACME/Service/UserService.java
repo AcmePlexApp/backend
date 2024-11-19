@@ -1,6 +1,8 @@
 package ENSF614Group1.ACME.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ENSF614Group1.ACME.Repository.*;
@@ -30,6 +32,28 @@ public class UserService {
 		return userRepository.save(user);
 	}
 	
+	@Transactional
+	public User createUser(String username, String password, String email) {
+		
+		PasswordEncoder encoder = new BCryptPasswordEncoder();
+		String encodedPassword = encoder.encode(password);
+		String formattedUsername = UserService.formatString(username);
+		String formattedEmail = UserService.formatString(email);
+		
+		if (userRepository.existsByUsername(formattedUsername)) {
+            throw new IllegalArgumentException("Username is already taken");
+        }
+        if (userRepository.existsByEmail(formattedEmail)) {
+            throw new IllegalArgumentException("Email is already registered");
+        }
+		
+		User user = new User();
+		user.setUsername(formattedUsername);
+		user.setPassword(encodedPassword);
+		user.setEmail(formattedEmail);
+		return userRepository.save(user);
+	}
+	
 	public List<User> getAllUsers(){
 		return userRepository.findAll();
 	}
@@ -46,23 +70,32 @@ public class UserService {
 		User user = getUserById(id);
 		return user.isRegistered();
 	}
-
 	
-	@Transactional
-	public User updateUser(Long id, User userDetails) {
-		Optional<User> user = userRepository.findById(id);
-		if (user.isEmpty()) {
+	public User loadByUsername(String username) {
+		String formattedString = UserService.formatString(username);
+		User user = userRepository.findByUsername(formattedString);
+		if(user == null) {
 			throw new EntityNotFoundException("User does not exist.");
 		}
-		User s = user.get();
-		
-		s.setUsername(userDetails.getUsername());
-		s.setPassword(userDetails.getPassword());
-		s.setEmail(userDetails.getEmail());
-		s.setCredits(userDetails.getCredits());
-
-		return userRepository.save(s);
+		return user;
 	}
+
+	
+//	@Transactional
+//	public User updateUser(Long id, User userDetails) {
+//		Optional<User> user = userRepository.findById(id);
+//		if (user.isEmpty()) {
+//			throw new EntityNotFoundException("User does not exist.");
+//		}
+//		User s = user.get();
+//		
+//		s.setUsername(userDetails.getUsername());
+//		s.setPassword(userDetails.getPassword());
+//		s.setEmail(userDetails.getEmail());
+//		s.setCredits(userDetails.getCredits());
+//
+//		return userRepository.save(s);
+//	}
 	
 	@Transactional
 	public void deleteUser(Long id) {
@@ -152,6 +185,10 @@ public class UserService {
 		}
 		user.setCredits(remainingCredits);
 		userRepository.save(user);
+	}
+	
+	static private String formatString(String string) {
+		return string.trim().toLowerCase();
 	}
     
 }

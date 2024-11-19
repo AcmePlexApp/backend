@@ -40,13 +40,6 @@ public class User {
     	credits.add(credit);
     }
     
-//    public void removeCredit(Credit credit) {
-//    	Optional<Credit> optCredit = credits.stream().filter(cr -> cr.getID().equals(credit.getID())).findFirst();
-//    	if (optCredit.isPresent()) {
-//    		credits.remove(optCredit.get());
-//    	}
-//    }
-//    
     public void updateCredit(Credit credit) {
     	Optional<Credit> optCredit = credits.stream().filter(cr -> cr.getID().equals(credit.getID())).findFirst();
     	if (optCredit.isPresent()) {
