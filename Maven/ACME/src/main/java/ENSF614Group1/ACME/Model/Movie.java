@@ -1,5 +1,7 @@
 package ENSF614Group1.ACME.Model;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +33,9 @@ public class Movie {
 	
 	@JsonView(Views.Basic.class)
     private int durationInMinutes;
+	
+	@JsonView(Views.Basic.class)
+	private LocalDate releaseDate;
     
 	@OneToMany(mappedBy = "movie")
 	@JsonView(Views.MovieDetail.class)
@@ -41,20 +46,23 @@ public class Movie {
     public String getTitle() {return title;}
     public String getDescription() {return description;}
     public int getDurationInMinutes() {return durationInMinutes;}
+    public LocalDate getReleaseDate() {return releaseDate;}
     public List<Theater> getTheaters() {return theaters;}
     
     // Setters
     public void setTitle(String title) {this.title = title;}
     public void setDescription(String description) {this.description = description;}
     public void setDurationInMinutes(int durationInMinutes) {this.durationInMinutes = durationInMinutes;}
+    public void setReleaseDate(LocalDate releaseDate) {this.releaseDate = releaseDate;}
     public void setTheaters(List<Theater> theaters) {this.theaters = theaters;}
     
     // Constructors
     public Movie() {}
-    public Movie(String title, String description, int durationInMinutes) {
+    public Movie(String title, String description, int durationInMinutes, LocalDate releaseDate) {
     	this.title = title;
     	this.description = description;
     	this.durationInMinutes = durationInMinutes;
+    	this.releaseDate = releaseDate;
     }
     
 }
