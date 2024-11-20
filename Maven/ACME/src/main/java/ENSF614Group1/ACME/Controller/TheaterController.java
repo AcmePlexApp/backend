@@ -35,9 +35,6 @@ public class TheaterController {
 	@Autowired
 	private MovieService movieService;
 	
-	@Autowired
-	private ShowtimeService showtimeService;
-	
 	@PostMapping
 	@JsonView(Views.Basic.class)
 	public ResponseEntity<Theater> createTheater(@RequestBody Theater theater) {
