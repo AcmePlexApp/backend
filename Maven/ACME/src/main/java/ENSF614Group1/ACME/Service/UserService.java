@@ -33,12 +33,12 @@ public class UserService {
 	}
 	
 	@Transactional
-	public User createUser(String username, String password, String email) {
+	public User createUser(String username, String password, String email) throws IllegalArgumentException {
 		
 		PasswordEncoder encoder = new BCryptPasswordEncoder();
 		String encodedPassword = encoder.encode(password);
-		String formattedUsername = UserService.formatString(username);
-		String formattedEmail = UserService.formatString(email);
+		String formattedUsername = UserService.checkAndFormatString(username);
+		String formattedEmail = UserService.checkAndFormatString(email);
 		
 		if (userRepository.existsByUsername(formattedUsername)) {
             throw new IllegalArgumentException("Username is already taken");
@@ -71,8 +71,8 @@ public class UserService {
 		return user.isRegistered();
 	}
 	
-	public User loadByUsername(String username) {
-		String formattedString = UserService.formatString(username);
+	public User loadByUsername(String username) throws IllegalArgumentException {
+		String formattedString = UserService.checkAndFormatString(username);
 		User user = userRepository.findByUsername(formattedString);
 		if(user == null) {
 			throw new EntityNotFoundException("User does not exist.");
@@ -187,7 +187,10 @@ public class UserService {
 		userRepository.save(user);
 	}
 	
-	static private String formatString(String string) {
+	static private String checkAndFormatString(String string) throws IllegalArgumentException {
+		if (string.isBlank()) {
+			throw new IllegalArgumentException("Empty Field is not allowed");
+		}
 		return string.trim().toLowerCase();
 	}
     

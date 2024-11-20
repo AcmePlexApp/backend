@@ -3,6 +3,7 @@ package ENSF614Group1.ACME.Security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -19,27 +20,65 @@ public class SecurityConfig {
 	
 	@Autowired
     private CustomUserDetailsService customUserDetailsService;
+	
+	@Autowired private JWTAuthFilter jwtAuthFilter;
+	
+	@Bean
+    @Order(1)
+    public SecurityFilterChain adminAndManagementSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+        	.csrf(csrf -> csrf.disable())
+            .securityMatcher(new AntPathRequestMatcher("/auth/**")) // Match /auth/**
+            .authorizeHttpRequests(authorize -> authorize
+            		.anyRequest().permitAll()
+            )
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // Add your custom filter
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JWTAuthFilter jwtFilter) throws Exception {
-    	http.authorizeHttpRequests((authorize) -> authorize
-                .requestMatchers("/**").permitAll()
-        ).csrf(csrf -> csrf
-        .ignoringRequestMatchers("/**") );
+            //.httpBasic() // Use HTTP Basic authentication
+
         
         return http.build();
     }
-    
+
+    // SecurityFilterChain for Public API
+    @Bean
+    @Order(2)
+    public SecurityFilterChain publicApiSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher(new AntPathRequestMatcher("/public/**")) // Match /public/**
+            .authorizeHttpRequests(authorize -> authorize
+                .anyRequest().permitAll() // Allow all requests without authentication
+            )
+            .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity
+        	.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // Add your custom filter
+        
+        return http.build();
+    }
+
+    // SecurityFilterChain for All Other Requests
+    @Bean
+    @Order(3)
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+        	.securityMatcher(new AntPathRequestMatcher("/**")) // Match rest
+            .authorizeHttpRequests(authorize -> authorize
+                .anyRequest().authenticated() // Require authentication for all other URLs
+            )
+            .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // Add your custom filter
+        
+        return http.build();
+    }
+
 //    @Bean
 //    public SecurityFilterChain securityFilterChain(HttpSecurity http, JWTAuthFilter jwtFilter) throws Exception {
-//        http.csrf().disable()
-//            .authorizeHttpRequests()
-//            .requestMatchers("/auth/register", "/auth/login", "/auth/authenticate").permitAll()
-//            .anyRequest().authenticated()
-//            .and()
-//            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-//
-//        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+//    	http.authorizeHttpRequests((authorize) -> authorize
+//                .requestMatchers("/auth/**").permitAll()
+//                .requestMatchers("/**").authenticated()
+//        )
+//    	.csrf(csrf -> csrf
+//        .ignoringRequestMatchers("/**") );
+//        
 //        return http.build();
 //    }
     
