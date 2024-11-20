@@ -28,72 +28,24 @@ public class JWTAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
     	
-        final String authHeader = request.getHeader("Authorization");
-        String username = null;
-        String token = null;
-        
-        System.out.println("TRYING TO USE AUTHHEADER");
-
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);
-            username = jwtUtil.extractUsername(token);
-        }
-        System.out.println("Username:" + username + ", Token:" + token);
-        
-        System.out.println("Request:\n" + requestToString(request));
-        
-        
-        System.out.println("AuthHeader:" + authHeader);
-
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-        	UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            if (jwtUtil.validateToken(token, userDetails.getUsername())) {
-                System.out.println("TOKEN VALIDATED");
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+        String token = jwtUtil.getAuthToken(request);
+        if (token == null){ // No AuthHeader
+        	chain.doFilter(request, response);
+        } else {
+        	try {
+            	String username = jwtUtil.extractUsername(token);
+            	jwtUtil.validateToken(token);
+            	UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            	UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                 		userDetails, null, userDetails.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            	authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+                chain.doFilter(request, response);
+            } catch (Exception e) {
+            	response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\": \"" + e.getLocalizedMessage() + "\"}");
             }
         }
-        chain.doFilter(request, response);
-    }
-    
-    public static String requestToString(HttpServletRequest request) throws IOException {
-        StringBuilder requestDetails = new StringBuilder();
-
-        // Append request method and URL
-        requestDetails.append("Method: ").append(request.getMethod()).append("\n");
-        requestDetails.append("Request URL: ").append(request.getRequestURL()).append("\n");
-
-        // Append headers
-        requestDetails.append("Headers:\n");
-        Enumeration<String> headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-            requestDetails.append("\t").append(headerName).append(": ").append(request.getHeader(headerName)).append("\n");
-        }
-
-        // Append parameters
-        requestDetails.append("Parameters:\n");
-        Enumeration<String> parameterNames = request.getParameterNames();
-        while (parameterNames.hasMoreElements()) {
-            String paramName = parameterNames.nextElement();
-            requestDetails.append("\t").append(paramName).append(": ").append(request.getParameter(paramName)).append("\n");
-        }
-
-//        // Append body (requires wrapping the request if it's already consumed)
-//        if (request instanceof ContentCachingRequestWrapper) {
-//            ContentCachingRequestWrapper cachingRequest = (ContentCachingRequestWrapper) request;
-//            String body = new String(cachingRequest.getContentAsByteArray(), request.getCharacterEncoding());
-//            requestDetails.append("Body:\n").append(body).append("\n");
-//        } else {
-//            // Directly read body (may not work if the stream is already consumed)
-//            try (BufferedReader reader = request.getReader()) {
-//                String body = reader.lines().collect(Collectors.joining(System.lineSeparator()));
-//                requestDetails.append("Body:\n").append(body).append("\n");
-//            }
-//        }
-
-        return requestDetails.toString();
     }
 }

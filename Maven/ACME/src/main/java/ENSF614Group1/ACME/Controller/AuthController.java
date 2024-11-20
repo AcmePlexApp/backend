@@ -32,8 +32,6 @@ public class AuthController {
         String username = request.get("username");
         String password = request.get("password");
         String email = request.get("email");
-        
-
         try {
             User user = userService.createUser(username, password, email);
             return ResponseEntity.ok("User registered successfully");
@@ -43,30 +41,27 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Map<String, String> login(@RequestBody Map<String, String> request) {
+    public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
     	
         String username = request.get("username");
         String password = request.get("password");
         
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        String token = jwtUtil.generateToken(userDetails.getUsername());
-
-        Map<String, String> response = new HashMap<>();
-        response.put("token", token);
-        return response;
+        User user = userService.loadByUsername(username);
+        String token = jwtUtil.generateToken(username);
+        
+        return ResponseEntity.ok().body("{\"token\": \"" + token + "\"}");
     }
     
-    @PostMapping("/authenticate")
-    public String authenticate(@RequestBody Map<String, String> request) {
-    	System.out.println("POST AUTHENTICATE");
-    	String username = request.get("username");
-        String password = request.get("password");
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password)
-        );
-
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        return jwtUtil.generateToken(userDetails.getUsername());
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader) {
+        String token = jwtUtil.getAuthToken(authHeader);
+    	if (token == null) {
+            return ResponseEntity.badRequest().body("Authorization header is missing or invalid.");
+        }
+        // Invalidate the token by adding it to the blacklist
+        jwtUtil.blacklistToken(token);
+        return ResponseEntity.ok("Logged out successfully.");
     }
+    
 }
