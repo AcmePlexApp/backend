@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ENSF614Group1.ACME.Model.Ticket;
@@ -30,6 +31,13 @@ public class TicketController {
 	public ResponseEntity<Ticket> createTicket(@RequestBody Ticket ticket){
 		Ticket createdTicket = ticketService.createTicket(ticket);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createdTicket);	
+	}
+	
+	@PostMapping("/purchase")
+	public ResponseEntity<Ticket> purchaseTicket(@RequestParam Long userId, @RequestParam Long theaterId, 
+			@RequestParam Long seatId, @RequestParam Long showtimeId){
+		Ticket ticket = ticketService.purchaseTicket(userId, theaterId, seatId, showtimeId);
+		return ResponseEntity.status(HttpStatus.CREATED).body(ticket);
 	}
 	
 	@GetMapping
