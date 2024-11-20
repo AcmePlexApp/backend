@@ -33,13 +33,6 @@ public class TicketController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(createdTicket);	
 	}
 	
-	@PostMapping("/purchase")
-	public ResponseEntity<Ticket> purchaseTicket(@RequestParam Long userId, @RequestParam Long theaterId, 
-			@RequestParam Long seatId, @RequestParam Long showtimeId){
-		Ticket ticket = ticketService.purchaseTicket(userId, theaterId, seatId, showtimeId);
-		return ResponseEntity.status(HttpStatus.CREATED).body(ticket);
-	}
-	
 	@GetMapping
 	public ResponseEntity<List<Ticket>> getAllTickets() {
 		return ResponseEntity.status(HttpStatus.OK).body(ticketService.getAllTickets());
