@@ -17,7 +17,7 @@ import java.util.Set;
 public class JWTUtil {
 
     private static final String SECRET_KEY = "2LX6QFI9G6MDUgs5qnq4mu9cazmb4Qbi";
-    private static final long EXPIRATION_TIME = 120;
+    private static final long EXPIRATION_TIME = 86400;
 
     private final Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     
