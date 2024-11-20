@@ -49,6 +49,7 @@ public class MovieService {
 		m.setTitle(movieDetails.getTitle());
 		m.setDescription(movieDetails.getDescription());
 		m.setDurationInMinutes(movieDetails.getDurationInMinutes());
+		m.setReleaseDate(movieDetails.getReleaseDate());
 		return movieRepository.save(m);
 	}
 	
