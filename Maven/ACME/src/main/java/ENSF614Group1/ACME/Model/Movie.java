@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
@@ -24,10 +23,6 @@ public class Movie {
 	@JsonView(Views.Basic.class)
     private Long id;    
 	
-	@OneToMany(mappedBy = "movie")
-	@JsonView(Views.Basic.class)
-	private List<Theater> theaters = new ArrayList<>();
-	
 	@JsonView(Views.Basic.class)
     private String title; 
 	
@@ -37,6 +32,10 @@ public class Movie {
 	@JsonView(Views.Basic.class)
     private int durationInMinutes;
     
+	@OneToMany(mappedBy = "movie")
+	@JsonView(Views.MovieDetail.class)
+	private List<Theater> theaters = new ArrayList<>();
+	
     // Getters
     public Long getId() {return id;}
     public String getTitle() {return title;}

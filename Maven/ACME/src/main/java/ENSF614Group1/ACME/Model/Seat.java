@@ -1,7 +1,8 @@
 package ENSF614Group1.ACME.Model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 
+import ENSF614Group1.ACME.Helpers.Views;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -25,7 +26,7 @@ public class Seat {
 	
 	@ManyToOne
 	@JoinColumn(name = "showtime_id", nullable = false)
-	@JsonIgnore
+	@JsonView(Views.TheaterDetail.class)
 	private Showtime showtime;
 	
 	// Getters

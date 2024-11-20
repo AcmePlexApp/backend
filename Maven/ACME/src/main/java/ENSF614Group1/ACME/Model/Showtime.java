@@ -36,7 +36,7 @@ public class Showtime {
 	private Theater theater;
 	
 	@OneToMany(mappedBy = "showtime", cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.LAZY)
-	@JsonView(Views.Detailed.class)
+	@JsonView(Views.TheaterDetail.class)
 	private List<Seat> seats = new ArrayList<>();
 	
 	// Getters

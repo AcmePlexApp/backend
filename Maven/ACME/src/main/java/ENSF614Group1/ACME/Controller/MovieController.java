@@ -29,20 +29,20 @@ public class MovieController {
 	
 	
 	@PostMapping
-	@JsonView(Views.Basic.class)
+	@JsonView(Views.MovieDetail.class)
 	public ResponseEntity<Movie> createMovie(@RequestBody Movie movie){
 		Movie createdMovie = movieService.createMovie(movie);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createdMovie);
 	}
 	
 	@GetMapping
-	@JsonView(Views.Basic.class)
+	@JsonView(Views.MovieDetail.class)
 	public ResponseEntity<List<Movie>> getAllMovies(){
 		return ResponseEntity.status(HttpStatus.OK).body(movieService.getAllMovies());
 	}
 	
 	@GetMapping("/{id}")
-	@JsonView(Views.Basic.class)
+	@JsonView(Views.MovieDetail.class)
 	public ResponseEntity<Movie> getMovieById(@PathVariable Long id){
 		Movie movie = movieService.getMovieById(id);
 		return ResponseEntity.status(HttpStatus.OK).body(movie);
@@ -50,7 +50,7 @@ public class MovieController {
 	
 	
 	@PutMapping("/{id}")
-	@JsonView(Views.Basic.class)
+	@JsonView(Views.MovieDetail.class)
 	public ResponseEntity<Movie> updateMovieById(@PathVariable Long id, @RequestBody Movie movieDetails){
 		Movie movie = movieService.updateMovieById(id, movieDetails);
 		return ResponseEntity.status(HttpStatus.OK).body(movie);

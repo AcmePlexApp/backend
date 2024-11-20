@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ENSF614Group1.ACME.Model.Movie;
+import ENSF614Group1.ACME.Model.Seat;
 import ENSF614Group1.ACME.Model.Theater;
 import ENSF614Group1.ACME.Repository.MovieRepository;
+import ENSF614Group1.ACME.Repository.ShowtimeRepository;
 import ENSF614Group1.ACME.Repository.TheaterRepository;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -21,6 +23,9 @@ public class TheaterService {
 	
 	@Autowired
 	private MovieRepository movieRepository;
+	
+	@Autowired
+	private ShowtimeRepository showtimeRepository;
 	
 	@Transactional
 	public Theater createTheater(String name) {
@@ -38,6 +43,11 @@ public class TheaterService {
 			throw new EntityNotFoundException("Theater does not exist.");
 		}
 		return theater.get();
+	}
+	
+	public List<Seat> getSeats(Long theaterId, Long showtimeId){
+		Optional<Theater> theater = theaterRepository.findById(id);
+		Optional<Showtime> showtime = showtimeRepository
 	}
 	
 	// Does not alter seats or showtimes
