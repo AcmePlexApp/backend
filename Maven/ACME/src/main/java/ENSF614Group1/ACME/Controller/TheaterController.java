@@ -1,7 +1,6 @@
 package ENSF614Group1.ACME.Controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,10 +22,8 @@ import ENSF614Group1.ACME.Model.Seat;
 import ENSF614Group1.ACME.Model.Showtime;
 import ENSF614Group1.ACME.Model.Theater;
 import ENSF614Group1.ACME.Service.MovieService;
-import ENSF614Group1.ACME.Service.SeatService;
 import ENSF614Group1.ACME.Service.ShowtimeService;
 import ENSF614Group1.ACME.Service.TheaterService;
-import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/theater")
@@ -45,7 +42,7 @@ public class TheaterController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(createdTheater);
 	}
 	
-	@PostMapping("/{theaterId}/{movieId}")
+	@PostMapping("/{theaterId}/movie/{movieId}")
 	@JsonView(Views.Basic.class)
 	public ResponseEntity<String> addMovieToTheater(@PathVariable Long theaterId, @PathVariable Long movieId){
 		theaterService.addMovieToTheater(theaterId, movieId);
@@ -71,6 +68,12 @@ public class TheaterController {
 	    return ResponseEntity.status(HttpStatus.OK).body(theater);
 	}
 	
+	@GetMapping("/{theaterId}/showtime/{showtimeId}/seats")
+	@JsonView(Views.TheaterDetail.class)
+	public ResponseEntity<List<Seat>> getSeats(@PathVariable Long showtimeId){
+		List<Seat> seats = theaterService.getSeats(showtimeId);
+		return ResponseEntity.status(HttpStatus.OK).body(seats);
+	}
 	
 	@PutMapping("/{id}")
 	@JsonView(Views.Basic.class)

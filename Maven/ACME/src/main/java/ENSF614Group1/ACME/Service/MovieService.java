@@ -1,5 +1,7 @@
 package ENSF614Group1.ACME.Service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +41,28 @@ public class MovieService {
 		return movie.get();
 	}
 	
+	public List<Movie> getUpcomingMovies() {
+		List<Movie> allMovies = movieRepository.findAll();
+		List<Movie> upcomingMovies = new ArrayList<>();
+		for(Movie movie: allMovies) {
+			if(movie.getReleaseDate().isAfter(LocalDate.now())) {
+				upcomingMovies.add(movie);
+			}
+		}
+		return upcomingMovies;
+	}
+	
+	public List<Movie> getReleasedMovies() {
+		List<Movie> allMovies = movieRepository.findAll();
+		List<Movie> releasedMovies = new ArrayList<>();
+		for(Movie movie: allMovies) {
+			if(movie.getReleaseDate().isBefore(LocalDate.now())) {
+				releasedMovies.add(movie);
+			}
+		}
+		return releasedMovies;
+	}
+	
 	@Transactional
 	public Movie updateMovieById(Long id, Movie movieDetails) {
 		Optional<Movie> movie = movieRepository.findById(id);
@@ -49,6 +73,7 @@ public class MovieService {
 		m.setTitle(movieDetails.getTitle());
 		m.setDescription(movieDetails.getDescription());
 		m.setDurationInMinutes(movieDetails.getDurationInMinutes());
+		m.setReleaseDate(movieDetails.getReleaseDate());
 		return movieRepository.save(m);
 	}
 	

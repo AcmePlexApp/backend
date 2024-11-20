@@ -8,8 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ENSF614Group1.ACME.Model.Movie;
+import ENSF614Group1.ACME.Model.Seat;
+import ENSF614Group1.ACME.Model.Showtime;
 import ENSF614Group1.ACME.Model.Theater;
 import ENSF614Group1.ACME.Repository.MovieRepository;
+import ENSF614Group1.ACME.Repository.SeatRepository;
+import ENSF614Group1.ACME.Repository.ShowtimeRepository;
 import ENSF614Group1.ACME.Repository.TheaterRepository;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -21,6 +25,12 @@ public class TheaterService {
 	
 	@Autowired
 	private MovieRepository movieRepository;
+	
+	@Autowired
+	private ShowtimeRepository showtimeRepository;
+	
+	@Autowired 
+	private SeatRepository seatRepository;
 	
 	@Transactional
 	public Theater createTheater(String name) {
@@ -38,6 +48,14 @@ public class TheaterService {
 			throw new EntityNotFoundException("Theater does not exist.");
 		}
 		return theater.get();
+	}
+	
+	public List<Seat> getSeats(Long showtimeId){
+		Optional<Showtime> showtime = showtimeRepository.findById(showtimeId);
+		if (showtime.isEmpty()) {
+			throw new EntityNotFoundException("Showtime does not exist.");
+		}
+		return seatRepository.findSeatsByShowtime(showtime.get());
 	}
 	
 	// Does not alter seats or showtimes
@@ -64,12 +82,9 @@ public class TheaterService {
 	@Transactional
 	public void addMovieToTheater(Long theaterId, Long movieId) {
 		Optional<Theater> theater = theaterRepository.findById(theaterId);
-		if (theater.isEmpty()) {
-			throw new EntityNotFoundException("Theater does not exist.");
-		}
 		Optional<Movie> movie = movieRepository.findById(movieId);
-		if (movie.isEmpty()) {
-			throw new EntityNotFoundException("Theater does not exist.");
+		if (theater.isEmpty() || movie.isEmpty()) {
+			throw new EntityNotFoundException("Entity does not exist.");
 		}
 		Theater t = theater.get();
 		Movie m = movie.get();

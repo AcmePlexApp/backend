@@ -1,10 +1,10 @@
 package ENSF614Group1.ACME.Model;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
@@ -24,10 +24,6 @@ public class Movie {
 	@JsonView(Views.Basic.class)
     private Long id;    
 	
-	@OneToMany(mappedBy = "movie")
-	@JsonView(Views.Basic.class)
-	private List<Theater> theaters = new ArrayList<>();
-	
 	@JsonView(Views.Basic.class)
     private String title; 
 	
@@ -36,26 +32,36 @@ public class Movie {
 	
 	@JsonView(Views.Basic.class)
     private int durationInMinutes;
+	
+	@JsonView(Views.Basic.class)
+	private LocalDate releaseDate;
     
+	@OneToMany(mappedBy = "movie")
+	@JsonView(Views.MovieDetail.class)
+	private List<Theater> theaters = new ArrayList<>();
+	
     // Getters
     public Long getId() {return id;}
     public String getTitle() {return title;}
     public String getDescription() {return description;}
     public int getDurationInMinutes() {return durationInMinutes;}
+    public LocalDate getReleaseDate() {return releaseDate;}
     public List<Theater> getTheaters() {return theaters;}
     
     // Setters
     public void setTitle(String title) {this.title = title;}
     public void setDescription(String description) {this.description = description;}
     public void setDurationInMinutes(int durationInMinutes) {this.durationInMinutes = durationInMinutes;}
+    public void setReleaseDate(LocalDate releaseDate) {this.releaseDate = releaseDate;}
     public void setTheaters(List<Theater> theaters) {this.theaters = theaters;}
     
     // Constructors
     public Movie() {}
-    public Movie(String title, String description, int durationInMinutes) {
+    public Movie(String title, String description, int durationInMinutes, LocalDate releaseDate) {
     	this.title = title;
     	this.description = description;
     	this.durationInMinutes = durationInMinutes;
+    	this.releaseDate = releaseDate;
     }
     
 }
