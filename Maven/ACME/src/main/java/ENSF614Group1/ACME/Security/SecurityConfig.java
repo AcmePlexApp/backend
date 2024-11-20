@@ -28,15 +28,12 @@ public class SecurityConfig {
     public SecurityFilterChain adminAndManagementSecurityFilterChain(HttpSecurity http) throws Exception {
         http
         	.csrf(csrf -> csrf.disable())
-            .securityMatcher(new AntPathRequestMatcher("/auth/**")) // Match /auth/**
+            .securityMatcher("/auth/login", "auth/register")
             .authorizeHttpRequests(authorize -> authorize
             		.anyRequest().permitAll()
             )
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // Add your custom filter
-
-            //.httpBasic() // Use HTTP Basic authentication
-
-        
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // Add custom filter
+       
         return http.build();
     }
 
@@ -45,12 +42,12 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain publicApiSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-            .securityMatcher(new AntPathRequestMatcher("/public/**")) // Match /public/**
+            .securityMatcher("/theater**", "/movie**")
             .authorizeHttpRequests(authorize -> authorize
                 .anyRequest().permitAll() // Allow all requests without authentication
             )
             .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity
-        	.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // Add your custom filter
+        	.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // Add custom filter
         
         return http.build();
     }
@@ -60,27 +57,15 @@ public class SecurityConfig {
     @Order(3)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-        	.securityMatcher(new AntPathRequestMatcher("/**")) // Match rest
+        	.securityMatcher("/**")
             .authorizeHttpRequests(authorize -> authorize
                 .anyRequest().authenticated() // Require authentication for all other URLs
             )
             .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // Add your custom filter
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // Add custom filter
         
         return http.build();
     }
-
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http, JWTAuthFilter jwtFilter) throws Exception {
-//    	http.authorizeHttpRequests((authorize) -> authorize
-//                .requestMatchers("/auth/**").permitAll()
-//                .requestMatchers("/**").authenticated()
-//        )
-//    	.csrf(csrf -> csrf
-//        .ignoringRequestMatchers("/**") );
-//        
-//        return http.build();
-//    }
     
 
     @Bean
