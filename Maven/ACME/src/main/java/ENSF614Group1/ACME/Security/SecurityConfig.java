@@ -42,7 +42,7 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain publicApiSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-            .securityMatcher("/theater**", "/movie**")
+            .securityMatcher("/theater", "/theater/**", "/movie", "/movie/**")
             .authorizeHttpRequests(authorize -> authorize
                 .anyRequest().permitAll() // Allow all requests without authentication
             )
