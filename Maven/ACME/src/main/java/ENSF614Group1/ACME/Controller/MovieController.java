@@ -48,6 +48,18 @@ public class MovieController {
 		return ResponseEntity.status(HttpStatus.OK).body(movie);
 	}
 	
+	@GetMapping("/upcoming")
+	@JsonView(Views.MovieDetail.class)
+	public ResponseEntity<List<Movie>> getUpcomingMovies(){
+		return ResponseEntity.status(HttpStatus.OK).body(movieService.getUpcomingMovies());
+	}
+	
+	@GetMapping("/released")
+	@JsonView(Views.MovieDetail.class)
+	public ResponseEntity<List<Movie>> getReleasedMovies(){
+		return ResponseEntity.status(HttpStatus.OK).body(movieService.getReleasedMovies());
+	}
+	
 	
 	@PutMapping("/{id}")
 	@JsonView(Views.MovieDetail.class)

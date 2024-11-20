@@ -1,5 +1,7 @@
 package ENSF614Group1.ACME.Service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +39,28 @@ public class MovieService {
 			throw new EntityNotFoundException("Movie does not exist.");
 		}
 		return movie.get();
+	}
+	
+	public List<Movie> getUpcomingMovies() {
+		List<Movie> allMovies = movieRepository.findAll();
+		List<Movie> upcomingMovies = new ArrayList<>();
+		for(Movie movie: allMovies) {
+			if(movie.getReleaseDate().isAfter(LocalDate.now())) {
+				upcomingMovies.add(movie);
+			}
+		}
+		return upcomingMovies;
+	}
+	
+	public List<Movie> getReleasedMovies() {
+		List<Movie> allMovies = movieRepository.findAll();
+		List<Movie> releasedMovies = new ArrayList<>();
+		for(Movie movie: allMovies) {
+			if(movie.getReleaseDate().isBefore(LocalDate.now())) {
+				releasedMovies.add(movie);
+			}
+		}
+		return releasedMovies;
 	}
 	
 	@Transactional
