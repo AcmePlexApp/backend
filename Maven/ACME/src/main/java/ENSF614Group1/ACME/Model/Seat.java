@@ -1,6 +1,9 @@
 package ENSF614Group1.ACME.Model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import ENSF614Group1.ACME.Helpers.Views;
 import jakarta.persistence.Entity;
@@ -13,20 +16,26 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Seat {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JsonView(Views.TheaterDetail.class)
     private Long id;
+	
+	@JsonView(Views.TheaterDetail.class)
 	private int seatRow;
+	
+	@JsonView(Views.TheaterDetail.class)
 	private int seatNumber;
 	
 	@Enumerated(EnumType.STRING)
+	@JsonView(Views.TheaterDetail.class)
     private SeatStatus status;
 	
 	@ManyToOne
 	@JoinColumn(name = "showtime_id", nullable = false)
-	@JsonView(Views.TheaterDetail.class)
 	private Showtime showtime;
 	
 	// Getters
