@@ -81,5 +81,9 @@ public class User {
     public Double refundRate() {
     	return REFUND_RATE;
     }
+    
+    public CreditCard getCreditCard() {
+    	return null;
+    }
 
 }

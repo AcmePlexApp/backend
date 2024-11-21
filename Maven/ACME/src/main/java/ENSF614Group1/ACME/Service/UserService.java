@@ -90,18 +90,23 @@ public class UserService {
 	}
 	
 	@Transactional
-	public void purchase(Long id, Long creditCardId, Double amount, boolean applyCredits) {
-		Optional<CreditCard> optCard = creditCardRepository.findById(id);
-		if (optCard.isEmpty()) {
-			throw new EntityNotFoundException("CreditCard does not exist.");
-		}
-		CreditCard creditCard = optCard.get();
+	public void purchase(Long id, CreditCard cc, Double amount, boolean applyCredits) {
 		Optional<User> optUser = userRepository.findById(id);
 		if (optUser.isEmpty()) {
 			throw new EntityNotFoundException("User does not exist.");
 		}
-		
 		User user = optUser.get();
+		CreditCard creditCard = null;
+		if (cc == null) { // ie: can leave out CC if they are registered
+			CreditCard registeredCard = user.getCreditCard();
+			if (registeredCard == null) { // They are not registered
+				throw new RuntimeException("User is not registered and credit card info was not provided.");
+			}
+			creditCard = registeredCard;
+		} else { // Credit card info was provided.
+			creditCard = creditCardRepository.save(cc); // Create it.
+		}
+		
 		Double remainingAmount = amount;
 		if (applyCredits) {
 			remainingAmount = applyCredits(user.getID(), amount);

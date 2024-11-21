@@ -51,11 +51,11 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.OK).build();
 	}	
 	
-	@PostMapping("/purchase/{creditCardId}/{amount}/{applyCredits}")
-	public ResponseEntity<String> purchase(@RequestHeader("Authorization") String authHeader, @PathVariable Long creditCardId, @PathVariable Double amount, @PathVariable Boolean applyCredits){
+	@PostMapping("/purchase/{amount}/{applyCredits}")
+	public ResponseEntity<String> purchase(@RequestHeader("Authorization") String authHeader, @RequestBody(required = false) CreditCard creditCard, Long creditCardId, @PathVariable Double amount, @PathVariable Boolean applyCredits){
 			String username = jwtUtil.getUsername(authHeader);
 			User user = userService.loadByUsername(username);
-			userService.purchase(user.getID(), creditCardId, amount, applyCredits);
+			userService.purchase(user.getID(), creditCard, amount, applyCredits);
 			String response = amount + " has been charged by " + user.getUsername() + ".";
 			return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
