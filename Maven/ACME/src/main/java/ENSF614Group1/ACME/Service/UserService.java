@@ -6,12 +6,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ENSF614Group1.ACME.Repository.*;
+import ch.qos.logback.core.util.Duration;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import ENSF614Group1.ACME.Model.*;
+import ENSF614Group1.ACME.Model.Seat.SeatStatus;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -25,6 +28,8 @@ public class UserService {
 	@Autowired private CreditCardRepository creditCardRepository;
 	@Autowired private BankRepository bankRepository;
 	@Autowired private CreditRepository creditRepository;
+	@Autowired private SeatRepository seatRepository;
+	@Autowired private TicketRepository ticketRepository;
 	
     @PersistenceContext private EntityManager entityManager;
 	
@@ -251,6 +256,109 @@ public class UserService {
 			throw new IllegalArgumentException("Empty Field is not allowed");
 		}
 		return string.trim().toLowerCase();
+	}
+	
+	@Transactional
+	public void addTicketToCart(Long userId, Long seatId) {
+		Optional<User> optUser = userRepository.findById(userId);
+		if (optUser.isEmpty()) {
+			throw new EntityNotFoundException("User does not exist.");
+		}
+		Optional<Seat> optSeat = seatRepository.findById(seatId);
+		if (optSeat.isEmpty()) {
+			throw new EntityNotFoundException("Seat does not exist.");
+		}
+		User user = optUser.get();
+		Seat seat = optSeat.get();
+		if (seat.getStatus() == SeatStatus.AVAILABLE) {
+			Ticket ticket = new Ticket(user, seat);
+			user.getCart().getTickets().add(ticket);
+			seat.setStatus(SeatStatus.INCART);
+			ticketRepository.save(ticket);
+			userRepository.save(user);
+			seatRepository.save(seat);
+		} else {
+			throw new RuntimeException("Seat is not available.");
+		}
+	}
+	
+	@Transactional
+	public void removeTicketFromCart(Long userId, Long ticketId) {
+		Optional<User> optUser = userRepository.findById(userId);
+		if (optUser.isEmpty()) {
+			throw new EntityNotFoundException("User does not exist.");
+		}
+		Optional<Ticket> optTicket = ticketRepository.findById(ticketId);
+		if (optTicket.isEmpty()) {
+			throw new EntityNotFoundException("Ticket does not exist.");
+		}
+		User user = optUser.get();
+		Ticket ticket = optTicket.get();
+		Seat seat = ticket.getSeat();
+		if(!user.getCart().getTickets().contains(ticket)){
+			throw new RuntimeException("Ticket is not in the user's cart.");
+		}
+		seat.setStatus(SeatStatus.AVAILABLE);
+		user.getCart().getTickets().remove(ticket);
+		userRepository.save(user);
+		seatRepository.save(seat);
+		ticketRepository.delete(ticket);
+	}
+	
+	@Transactional
+	public void purchaseTicketsInCart(Long userId, CreditCard cc, boolean applyCredits) {
+		Optional<User> optUser = userRepository.findById(userId);
+		if (optUser.isEmpty()) {
+			throw new EntityNotFoundException("User does not exist.");
+		}
+		User user = optUser.get();
+		Cart cart = user.getCart();
+		if(cart.getTickets().isEmpty()) {
+			throw new RuntimeException("Cart is empty.");
+		}
+		double totalCost = 0.0;
+		for(Ticket ticket : cart.getTickets()) {
+			totalCost += ticket.getSeat().getCost();
+		}
+		purchase(userId, cc, totalCost, applyCredits);
+		
+		// Transfer tickets from cart to user after purchase
+		user.getTickets().addAll(cart.getTickets());
+		cart.getTickets().clear();
+		userRepository.save(user);
+		for(Ticket ticket : user.getTickets()) {
+			ticket.getSeat().setStatus(SeatStatus.BOOKED);
+		}
+		ticketRepository.saveAll(user.getTickets());
+	}
+	
+	@Transactional
+	public void cancelPurchasedTicket(Long userId, Long ticketId, CreditCard cc) {
+		Optional<User> optUser = userRepository.findById(userId);
+		if (optUser.isEmpty()) {
+			throw new EntityNotFoundException("User does not exist.");
+		}
+		Optional<Ticket> optTicket = ticketRepository.findById(ticketId);
+		if (optTicket.isEmpty()) {
+			throw new EntityNotFoundException("Ticket does not exist.");
+		}
+		User user = optUser.get();
+		Ticket ticket = optTicket.get();
+		Seat seat = ticket.getSeat();
+		if(!user.getTickets().contains(ticket)){
+			throw new RuntimeException("User does not own ticket.");
+		}
+		LocalDateTime dateTimeOfShow = seat.getShowtime().getDateTime();
+		long hoursBetween = ChronoUnit.HOURS.between(LocalDateTime.now(), dateTimeOfShow);
+		if (hoursBetween < 72) {
+			throw new RuntimeException("Cannot cancel within 72 hours of showtime.");
+		}
+		refund(userId, cc, seat.getCost());
+		seat.setStatus(SeatStatus.AVAILABLE);
+		user.getTickets().remove(ticket);
+		ticketRepository.delete(ticket);
+		seatRepository.save(seat);
+		userRepository.save(user);
 	}
     
 }

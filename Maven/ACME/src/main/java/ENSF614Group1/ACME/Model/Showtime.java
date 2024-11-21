@@ -44,12 +44,12 @@ public class Showtime {
 	
 	// Getters
 	public Long getId() {return id;}
-	public LocalDateTime getTimeOfDay() {return dateTime;}
+	public LocalDateTime getDateTime() {return dateTime;}
 	public Theater getTheater() {return theater;}
 	public List<Seat> getSeats(){return seats;}
 	
 	// Setters
-	public void setTimeOfDay(LocalDateTime dateTime) {this.dateTime = dateTime;}
+	public void setDateTime(LocalDateTime dateTime) {this.dateTime = dateTime;}
 	public void setTheater(Theater theater) {this.theater = theater;}
 	public void setSeats(List<Seat> seats) {this.seats = seats;}
 	
