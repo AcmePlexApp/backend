@@ -10,7 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class Showtime {
     private Long id;
 	
 	@JsonView(Views.Basic.class)
-	private LocalTime timeOfDay;
+	private LocalDateTime dateTime;
 	
 	@ManyToOne
 	@JoinColumn(name = "theater_id", nullable = false)
@@ -44,19 +44,19 @@ public class Showtime {
 	
 	// Getters
 	public Long getId() {return id;}
-	public LocalTime getTimeOfDay() {return timeOfDay;}
+	public LocalDateTime getTimeOfDay() {return dateTime;}
 	public Theater getTheater() {return theater;}
 	public List<Seat> getSeats(){return seats;}
 	
 	// Setters
-	public void setTimeOfDay(LocalTime timeOfDay) {this.timeOfDay = timeOfDay;}
+	public void setTimeOfDay(LocalDateTime dateTime) {this.dateTime = dateTime;}
 	public void setTheater(Theater theater) {this.theater = theater;}
 	public void setSeats(List<Seat> seats) {this.seats = seats;}
 	
 	// Constructors
 	public Showtime() {}
-	public Showtime(LocalTime time, Theater theater) {
-		this.timeOfDay = time;
+	public Showtime(LocalDateTime dateTime, Theater theater) {
+		this.dateTime = dateTime;
         this.theater = theater;
         createSeats();
 	}

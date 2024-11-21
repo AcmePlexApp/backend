@@ -1,5 +1,7 @@
 package ENSF614Group1.ACME.Model;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,10 +56,11 @@ public class Theater {
 	
 	// Methods
 	private void createShowtimes() {
-	    showtimes.add(new Showtime(LocalTime.of(13, 0), this));   // 1:00 PM
-	    showtimes.add(new Showtime(LocalTime.of(16, 0), this));   // 4:00 PM
-	    showtimes.add(new Showtime(LocalTime.of(19, 0), this));   // 7:00 PM
-	    showtimes.add(new Showtime(LocalTime.of(21, 0), this));   // 9:00 PM
+		LocalDate today = LocalDate.now();
+		for(int i = 0; i < 14; i++) {
+			showtimes.add(new Showtime(LocalDateTime.of(today.plusDays(i), LocalTime.of(19, 0)), this));   // 7:00 PM
+			showtimes.add(new Showtime(LocalDateTime.of(today.plusDays(i), LocalTime.of(21, 0)), this));   // 9:00 PM
+		}
 	}
 	
 }
