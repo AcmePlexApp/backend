@@ -17,7 +17,7 @@ public class Ticket {
     private Cart cart;
     
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
     
     private TicketStatus status;

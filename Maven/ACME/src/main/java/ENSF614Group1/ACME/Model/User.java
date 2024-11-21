@@ -2,12 +2,9 @@ package ENSF614Group1.ACME.Model;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -26,17 +23,27 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Credit> credits = new ArrayList<>();
     
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Cart cart;
+    
+    @OneToMany(mappedBy = "user")
+    private List<Ticket> tickets = new ArrayList<>();
+    
     public Long getID() {return id;}
     public String getUsername() {return username;}
     public String getPassword() {return password;}
     public String getEmail() {return email;}
     public List<Credit> getCredits() {return credits;}
+    public Cart getCart() {return cart;}
+    public List<Ticket> getTickets(){return tickets;}
 
     
     public void setUsername(String username) {this.username = username;}
     public void setPassword(String password) {this.password = password;}
     public void setEmail(String email) {this.email = email;}
     public void setCredits(List<Credit> credits) {this.credits = credits;}
+    public void setCart(Cart cart) {this.cart = cart;}
+    public void setTickets(List<Ticket> tickets) {this.tickets = tickets;}
     
     public void addCredit(Credit credit) {
     	credits.add(credit);
