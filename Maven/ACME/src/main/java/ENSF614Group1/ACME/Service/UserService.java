@@ -111,25 +111,47 @@ public class UserService {
 		if (applyCredits) {
 			remainingAmount = applyCredits(user.getID(), amount);
 		}
+		Optional<Bank> optBank = bankRepository.findById(creditCard.getBank().getID());
+		if (optBank.isEmpty()) {
+			throw new EntityNotFoundException("User could not purchase.  Cannot find bank.");
+		}
+		Bank bank = optBank.get();
+		creditCard.setBank(bank);
 		creditCard.charge(remainingAmount);
 	}
 	
 	@Transactional
-	public void refund(Long id, Long creditCardId, Double amount) {
-		Optional<CreditCard> optCard = creditCardRepository.findById(id);
-		if (optCard.isEmpty()) {
-			throw new EntityNotFoundException("CreditCard does not exist.");
-		}
-		CreditCard creditCard = optCard.get();
+	public void refund(Long id, CreditCard cc, Double amount) {
 		Optional<User> optUser = userRepository.findById(id);
 		if (optUser.isEmpty()) {
 			throw new EntityNotFoundException("User does not exist.");
 		}
-		
 		User user = optUser.get();
+		CreditCard creditCard = null;
+		if (cc == null) { // ie: can leave out CC if they are registered
+			CreditCard registeredCard = user.getCreditCard();
+			if (registeredCard == null) { // They are not registered
+				throw new RuntimeException("User is not registered and credit card info was not provided.");
+			}
+			creditCard = registeredCard;
+		} else { // Credit card info was provided.
+			Optional<CreditCard> optCreditCard = creditCardRepository.findById(cc.getID()); // Find it.
+			if (optCreditCard.isEmpty()) {
+				throw new EntityNotFoundException("Credit Card does not exist.");
+			}
+			creditCard = optCreditCard.get();
+		}
+		Optional<Bank> optBank = bankRepository.findById(creditCard.getBank().getID());
+		if (optBank.isEmpty()) {
+			throw new EntityNotFoundException("User could not purchase.  Cannot find bank.");
+		}
+		Bank bank = optBank.get();
+		creditCard.setBank(bank);
 		Double creditAmount = amount * (1.0 - user.refundRate());
 		Double refundAmount = amount - creditAmount;
-		addCreditToUser(user.getID(), creditAmount);
+		if (creditAmount > 0.001) {
+			addCreditToUser(user.getID(), creditAmount);
+		}
 		creditCard.refund(refundAmount);		
 	}
 	

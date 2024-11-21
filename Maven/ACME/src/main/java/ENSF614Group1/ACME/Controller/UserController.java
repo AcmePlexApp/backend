@@ -52,7 +52,7 @@ public class UserController {
 	}	
 	
 	@PostMapping("/purchase/{amount}/{applyCredits}")
-	public ResponseEntity<String> purchase(@RequestHeader("Authorization") String authHeader, @RequestBody(required = false) CreditCard creditCard, Long creditCardId, @PathVariable Double amount, @PathVariable Boolean applyCredits){
+	public ResponseEntity<String> purchase(@RequestHeader("Authorization") String authHeader, @RequestBody(required = false) CreditCard creditCard, @PathVariable Double amount, @PathVariable Boolean applyCredits){
 			String username = jwtUtil.getUsername(authHeader);
 			User user = userService.loadByUsername(username);
 			userService.purchase(user.getID(), creditCard, amount, applyCredits);
@@ -60,12 +60,12 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	
-	@PostMapping("/refund/{creditCardId}/{amount}")
-	public ResponseEntity<String> refund(@RequestHeader("Authorization") String authHeader, @PathVariable Long creditCardId, @PathVariable Double amount){
+	@PostMapping("/refund/{amount}")
+	public ResponseEntity<String> refund(@RequestHeader("Authorization") String authHeader, @RequestBody(required = false) CreditCard creditCard, @PathVariable Double amount){
 			String username = jwtUtil.getUsername(authHeader);
 			User user = userService.loadByUsername(username);
-			userService.refund(user.getID(), creditCardId, amount);
-			String response = amount + " has been charged by " + user.getUsername() + ".";
+			userService.refund(user.getID(), creditCard, amount);
+			String response = amount + " has been refunded to " + user.getUsername() + ".";
 			return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	
