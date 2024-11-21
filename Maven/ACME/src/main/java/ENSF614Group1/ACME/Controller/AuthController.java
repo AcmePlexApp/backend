@@ -27,14 +27,14 @@ public class AuthController {
     @Autowired private UserDetailsService userDetailsService;
     @Autowired private UserService userService;
     
-    @PostMapping("/register")
+    @PostMapping("/create")
     public ResponseEntity<?> register(@RequestBody Map<String, String> request) {
         String username = request.get("username");
         String password = request.get("password");
         String email = request.get("email");
         try {
             User user = userService.createUser(username, password, email);
-            return ResponseEntity.ok("User registered successfully");
+            return ResponseEntity.ok().body(user);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
