@@ -19,10 +19,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import ENSF614Group1.ACME.Helpers.Views;
 import ENSF614Group1.ACME.Model.Movie;
 import ENSF614Group1.ACME.Model.Seat;
-import ENSF614Group1.ACME.Model.Showtime;
 import ENSF614Group1.ACME.Model.Theater;
 import ENSF614Group1.ACME.Service.MovieService;
-import ENSF614Group1.ACME.Service.ShowtimeService;
 import ENSF614Group1.ACME.Service.TheaterService;
 
 @RestController
@@ -51,9 +49,6 @@ public class TheaterController {
 		String response = movie.getTitle() + " has been added to " + theater.getName();
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
-	
-	// Potentially add post methods for adding seats and showtime. At creation, Theaters generate generic seats and showtimes.
-	// Currently setup so that seats and showtimes are cannot be altered.
 	
 	@GetMapping
 	@JsonView(Views.Basic.class)
