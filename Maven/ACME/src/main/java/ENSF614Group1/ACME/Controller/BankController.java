@@ -37,18 +37,6 @@ public class BankController {
 		return ResponseEntity.status(HttpStatus.OK).body(bankService.getAllBanks());
 	}
 	
-	@GetMapping("/{id}")
-	public ResponseEntity<Bank> getBankById(@PathVariable Long id) {
-		Bank bank = bankService.getBankById(id);
-		return ResponseEntity.status(HttpStatus.OK).body(bank);
-	}
-	
-	@PutMapping("/{id}")
-	public ResponseEntity<Bank> updateBankById(@PathVariable Long id, @RequestBody Bank bankDetails){
-		Bank bank = bankService.updateBank(id, bankDetails);
-		return ResponseEntity.status(HttpStatus.OK).body(bank);
-	}
-	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteBankById(@PathVariable Long id){
 		bankService.deleteBank(id);

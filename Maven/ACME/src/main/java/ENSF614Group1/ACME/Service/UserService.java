@@ -71,7 +71,7 @@ public class UserService {
 		return user.isRegistered();
 	}
 	
-	public User loadByUsername(String username) throws IllegalArgumentException {
+	public User loadByUsername(String username) throws EntityNotFoundException {
 		String formattedString = UserService.checkAndFormatString(username);
 		User user = userRepository.findByUsername(formattedString);
 		if(user == null) {

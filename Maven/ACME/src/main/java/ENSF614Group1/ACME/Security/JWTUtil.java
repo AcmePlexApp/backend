@@ -28,6 +28,13 @@ public class JWTUtil {
     	return getAuthToken(authHeader);
     }
     
+    public String getUsername(String authHeader) throws RuntimeException, ExpiredJwtException {
+    	String token = getAuthToken(authHeader);
+    	if (token == null) {throw new RuntimeException("Authorization Token not found");}
+    	String username = extractUsername(token);
+    	return username;
+    }
+    
     public String getAuthToken(String authHeader) {
     	if (authHeader == null) {return null;}
     	if (!authHeader.startsWith("Bearer ")) {return null;}
