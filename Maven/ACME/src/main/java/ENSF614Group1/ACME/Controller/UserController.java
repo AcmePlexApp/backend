@@ -12,13 +12,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import ENSF614Group1.ACME.Model.CreditCard;
 import ENSF614Group1.ACME.Model.Movie;
 import ENSF614Group1.ACME.Model.RegisteredUser;
 import ENSF614Group1.ACME.Model.Theater;
 import ENSF614Group1.ACME.Model.User;
+import ENSF614Group1.ACME.Security.JWTUtil;
 import ENSF614Group1.ACME.Service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -26,61 +29,51 @@ import jakarta.persistence.EntityNotFoundException;
 @RequestMapping("/user")
 public class UserController {
 	
-	@Autowired
-	private UserService userService;
+	@Autowired private UserService userService;
 	
-	@PostMapping
-	public ResponseEntity<User> createUser(@RequestBody User user){
-		User createdUser = userService.createUser(user);
-		return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);	
-	}
+    @Autowired private JWTUtil jwtUtil;
 	
 	@GetMapping
-	public ResponseEntity<List<User>> getAllUsers() {
-		return ResponseEntity.status(HttpStatus.OK).body(userService.getAllUsers());
+	public ResponseEntity<?> getUser(@RequestHeader("Authorization") String authHeader) {
+			String username = jwtUtil.getUsername(authHeader);
+			User user = userService.loadByUsername(username);
+			return ResponseEntity.status(HttpStatus.OK).body(user);
+		
 	}
 	
-	@GetMapping("/{id}")
-	public ResponseEntity<User> getUserById(@PathVariable Long id) {
-		User user = userService.getUserById(id);
-		return ResponseEntity.status(HttpStatus.OK).body(user);
+	@DeleteMapping
+	public ResponseEntity<?> deleteUser(@RequestHeader("Authorization") String authHeader){
+			String token = jwtUtil.getAuthToken(authHeader);
+			String username = jwtUtil.getUsername(authHeader);
+			User user = userService.loadByUsername(username);
+			userService.deleteUser(user.getID());
+			jwtUtil.blacklistToken(token);
+			return ResponseEntity.status(HttpStatus.OK).build();
+	}	
+	
+	@PostMapping("/purchase/{amount}/{applyCredits}")
+	public ResponseEntity<String> purchase(@RequestHeader("Authorization") String authHeader, @RequestBody(required = false) CreditCard creditCard, @PathVariable Double amount, @PathVariable Boolean applyCredits){
+			String username = jwtUtil.getUsername(authHeader);
+			User user = userService.loadByUsername(username);
+			userService.purchase(user.getID(), creditCard, amount, applyCredits);
+			String response = amount + " has been charged by " + user.getUsername() + ".";
+			return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	
-//	@PutMapping("/{id}")
-//	public ResponseEntity<User> updateUserById(@PathVariable Long id, @RequestBody User userDetails){
-//		User user = userService.updateUser(id, userDetails);
-//		return ResponseEntity.status(HttpStatus.OK).body(user);
-//	}
-	
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteUserById(@PathVariable Long id){
-		userService.deleteUser(id);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	@PostMapping("/refund/{amount}")
+	public ResponseEntity<String> refund(@RequestHeader("Authorization") String authHeader, @RequestBody(required = false) CreditCard creditCard, @PathVariable Double amount){
+			String username = jwtUtil.getUsername(authHeader);
+			User user = userService.loadByUsername(username);
+			userService.refund(user.getID(), creditCard, amount);
+			String response = amount + " has been refunded to " + user.getUsername() + ".";
+			return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	
-	@PostMapping("/{userId}/credits/{amount}")
-	public ResponseEntity<String> addCreditToUser(@PathVariable Long userId, @PathVariable Double amount){
-		User user = userService.addCreditToUser(userId, amount);
-		//Credit credit = creditService.getMovieById(movieId);
-		String response = amount + " credit has been added to " + user.getUsername() + " account.";
-		return ResponseEntity.status(HttpStatus.OK).body(response);
+	@PostMapping("/register")
+	public ResponseEntity<?> register(@RequestHeader("Authorization") String authHeader, @RequestBody CreditCard creditCard){
+			String username = jwtUtil.getUsername(authHeader);
+			User user = userService.loadByUsername(username);
+			RegisteredUser registeredUser = userService.register(user.getID(), creditCard);
+			return ResponseEntity.status(HttpStatus.OK).body(registeredUser);
 	}
-	
-	@PostMapping("/{userId}/register/{creditCardId}")
-	public RegisteredUser register(@PathVariable Long userId, @PathVariable Long creditCardId){
-		return userService.register(userId, creditCardId);
-	}
-	
-	@PostMapping("/{userId}/applycredits/{amount}")
-	public ResponseEntity<String> applyCredits(@PathVariable Long userId, @PathVariable Double amount){
-		Double remaining = userService.applyCredits(userId, amount);
-		String response = (amount - remaining) + " credit has been applied to the requested amount. " + remaining + " of requested amount remaining.";
-		return ResponseEntity.status(HttpStatus.OK).body(response);
-	}
-	
-	@GetMapping("/{userId}/registered")
-	public boolean getRegisteredByID(@PathVariable Long userId) {
-		return userService.isUserRegistered(userId);
-	}
-	
 }

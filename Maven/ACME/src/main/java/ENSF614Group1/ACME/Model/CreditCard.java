@@ -46,12 +46,11 @@ public class CreditCard {
     }
     
     public void charge(Double amount) {
-    	//System.out.println("CHARGED " + amount + " TO CREDITCARD " + cardNumber);
+    	System.out.println("CHARGED " + amount + " TO " + firstName + " " + lastName + "'s CREDITCARD " + cardNumber + " at Bank " + bank.getTitle());
     }
     
     public void refund(Double amount) {
-    	//System.out.println("REFUNDED " + amount + " TO CREDITCARD " + cardNumber);
-
+    	System.out.println("REFUNDED " + amount + " TO " + firstName + " " + lastName + "'s CREDITCARD " + cardNumber + " at Bank " + bank.getTitle());
     }
     
 }

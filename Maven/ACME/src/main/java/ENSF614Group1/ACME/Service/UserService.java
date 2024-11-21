@@ -23,6 +23,7 @@ public class UserService {
 	@Autowired private UserRepository userRepository;
 	@Autowired private RegisteredUserRepository registeredUserRepository;
 	@Autowired private CreditCardRepository creditCardRepository;
+	@Autowired private BankRepository bankRepository;
 	@Autowired private CreditRepository creditRepository;
 	
     @PersistenceContext private EntityManager entityManager;
@@ -71,7 +72,7 @@ public class UserService {
 		return user.isRegistered();
 	}
 	
-	public User loadByUsername(String username) throws IllegalArgumentException {
+	public User loadByUsername(String username) throws EntityNotFoundException {
 		String formattedString = UserService.checkAndFormatString(username);
 		User user = userRepository.findByUsername(formattedString);
 		if(user == null) {
@@ -79,23 +80,6 @@ public class UserService {
 		}
 		return user;
 	}
-
-	
-//	@Transactional
-//	public User updateUser(Long id, User userDetails) {
-//		Optional<User> user = userRepository.findById(id);
-//		if (user.isEmpty()) {
-//			throw new EntityNotFoundException("User does not exist.");
-//		}
-//		User s = user.get();
-//		
-//		s.setUsername(userDetails.getUsername());
-//		s.setPassword(userDetails.getPassword());
-//		s.setEmail(userDetails.getEmail());
-//		s.setCredits(userDetails.getCredits());
-//
-//		return userRepository.save(s);
-//	}
 	
 	@Transactional
 	public void deleteUser(Long id) {
@@ -103,6 +87,72 @@ public class UserService {
 			throw new EntityNotFoundException("User does not exist.");
 		}
 		userRepository.deleteById(id);
+	}
+	
+	@Transactional
+	public void purchase(Long id, CreditCard cc, Double amount, boolean applyCredits) {
+		Optional<User> optUser = userRepository.findById(id);
+		if (optUser.isEmpty()) {
+			throw new EntityNotFoundException("User does not exist.");
+		}
+		User user = optUser.get();
+		CreditCard creditCard = null;
+		if (cc == null) { // ie: can leave out CC if they are registered
+			CreditCard registeredCard = user.getCreditCard();
+			if (registeredCard == null) { // They are not registered
+				throw new RuntimeException("User is not registered and credit card info was not provided.");
+			}
+			creditCard = registeredCard;
+		} else { // Credit card info was provided.
+			creditCard = creditCardRepository.save(cc); // Create it.
+		}
+		
+		Double remainingAmount = amount;
+		if (applyCredits) {
+			remainingAmount = applyCredits(user.getID(), amount);
+		}
+		Optional<Bank> optBank = bankRepository.findById(creditCard.getBank().getID());
+		if (optBank.isEmpty()) {
+			throw new EntityNotFoundException("User could not purchase.  Cannot find bank.");
+		}
+		Bank bank = optBank.get();
+		creditCard.setBank(bank);
+		creditCard.charge(remainingAmount);
+	}
+	
+	@Transactional
+	public void refund(Long id, CreditCard cc, Double amount) {
+		Optional<User> optUser = userRepository.findById(id);
+		if (optUser.isEmpty()) {
+			throw new EntityNotFoundException("User does not exist.");
+		}
+		User user = optUser.get();
+		CreditCard creditCard = null;
+		if (cc == null) { // ie: can leave out CC if they are registered
+			CreditCard registeredCard = user.getCreditCard();
+			if (registeredCard == null) { // They are not registered
+				throw new RuntimeException("User is not registered and credit card info was not provided.");
+			}
+			creditCard = registeredCard;
+		} else { // Credit card info was provided.
+			Optional<CreditCard> optCreditCard = creditCardRepository.findById(cc.getID()); // Find it.
+			if (optCreditCard.isEmpty()) {
+				throw new EntityNotFoundException("Credit Card does not exist.");
+			}
+			creditCard = optCreditCard.get();
+		}
+		Optional<Bank> optBank = bankRepository.findById(creditCard.getBank().getID());
+		if (optBank.isEmpty()) {
+			throw new EntityNotFoundException("User could not purchase.  Cannot find bank.");
+		}
+		Bank bank = optBank.get();
+		creditCard.setBank(bank);
+		Double creditAmount = amount * (1.0 - user.refundRate());
+		Double refundAmount = amount - creditAmount;
+		if (creditAmount > 0.001) {
+			addCreditToUser(user.getID(), creditAmount);
+		}
+		creditCard.refund(refundAmount);		
 	}
 	
 	@Transactional
@@ -119,13 +169,22 @@ public class UserService {
 	}
 	
 	@Transactional
-    public RegisteredUser register(Long userID, Long creditCardID) {
-    	Optional<CreditCard> optCreditCard = creditCardRepository.findById(creditCardID);
-		if (optCreditCard.isEmpty()) {
-			throw new EntityNotFoundException("User could not be registered.  CreditCard does not exist.");
+    public RegisteredUser register(Long userID, CreditCard cc) {
+		Optional<User> optUser = userRepository.findById(userID);
+		if (optUser.isEmpty()) {
+			throw new EntityNotFoundException("User could not be registered.  User does not exist.");
 		}
-		CreditCard creditCard = optCreditCard.get();
-		
+		User user = optUser.get();
+		if (user.isRegistered()) {
+			throw new RuntimeException("User could not be registered.  User is already registered");
+		}
+		Optional<Bank> optBank = bankRepository.findById(cc.getBank().getID());
+		if (optBank.isEmpty()) {
+			throw new EntityNotFoundException("User could not be registered.  Cannot find bank.");
+		}
+		Bank bank = optBank.get();
+		cc.setBank(bank);
+		CreditCard creditCard = creditCardRepository.save(cc);
 		// Specialization of a Generalized class requires manual SQL commands.
 		entityManager.createNativeQuery("UPDATE user SET user_type = :newType WHERE id = :userId")
     	.setParameter("newType", RegisteredUser.RegisteredUserKey)

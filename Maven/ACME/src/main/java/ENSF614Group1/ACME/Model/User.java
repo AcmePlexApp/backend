@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 public class User {
+	
+	static Double REFUND_RATE = 0.85;
 			
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -74,6 +76,14 @@ public class User {
     
     public boolean isRegistered() {
     	return false;
+    }
+    
+    public Double refundRate() {
+    	return REFUND_RATE;
+    }
+    
+    public CreditCard getCreditCard() {
+    	return null;
     }
 
 }

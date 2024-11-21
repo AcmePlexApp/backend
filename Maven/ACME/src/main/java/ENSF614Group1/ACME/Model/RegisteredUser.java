@@ -10,7 +10,7 @@ import jakarta.persistence.*;
 @DiscriminatorValue("registeredUser")
 public class RegisteredUser extends User {
 	
-	static double CREDIT_FRACTION = 0.0;
+	static double REFUND_RATE = 1.0;
 	
 	static int MONTHS_UNTIL_MEMBERSHIP_RENEWAL = 12;
 		
@@ -46,5 +46,10 @@ public class RegisteredUser extends User {
     @Override
     public boolean isRegistered() {
     	return true;
+    }
+    
+    @Override
+    public Double refundRate() {
+    	return REFUND_RATE;
     }
 }
