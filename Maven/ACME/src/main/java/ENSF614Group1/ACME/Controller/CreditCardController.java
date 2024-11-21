@@ -32,20 +32,9 @@ public class CreditCardController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(createdCreditCard);	
 	}
 	
-	@GetMapping
-	public ResponseEntity<List<CreditCard>> getAllCreditCards() {
-		return ResponseEntity.status(HttpStatus.OK).body(creditCardService.getAllCreditCards());
-	}
-	
 	@GetMapping("/{id}")
 	public ResponseEntity<CreditCard> getCreditCardById(@PathVariable Long id) {
 		CreditCard creditCard = creditCardService.getCreditCardById(id);
-		return ResponseEntity.status(HttpStatus.OK).body(creditCard);
-	}
-	
-	@PutMapping("/{id}")
-	public ResponseEntity<CreditCard> updateCreditCardById(@PathVariable Long id, @RequestBody CreditCard creditCardDetails){
-		CreditCard creditCard = creditCardService.updateCreditCard(id, creditCardDetails);
 		return ResponseEntity.status(HttpStatus.OK).body(creditCard);
 	}
 	

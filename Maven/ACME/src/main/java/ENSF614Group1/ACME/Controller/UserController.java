@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import ENSF614Group1.ACME.Model.CreditCard;
 import ENSF614Group1.ACME.Model.Movie;
 import ENSF614Group1.ACME.Model.RegisteredUser;
 import ENSF614Group1.ACME.Model.Theater;
@@ -33,76 +34,46 @@ public class UserController {
     @Autowired private JWTUtil jwtUtil;
 	
 	@GetMapping
-	public ResponseEntity<User> getUser(@RequestHeader("Authorization") String authHeader) {
-		try {
+	public ResponseEntity<?> getUser(@RequestHeader("Authorization") String authHeader) {
 			String username = jwtUtil.getUsername(authHeader);
 			User user = userService.loadByUsername(username);
 			return ResponseEntity.status(HttpStatus.OK).body(user);
-		} catch (EntityNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
 		
 	}
 	
 	@DeleteMapping
-	public ResponseEntity<Void> deleteUser(@RequestHeader("Authorization") String authHeader){
-		try {
+	public ResponseEntity<?> deleteUser(@RequestHeader("Authorization") String authHeader){
 			String token = jwtUtil.getAuthToken(authHeader);
 			String username = jwtUtil.getUsername(authHeader);
 			User user = userService.loadByUsername(username);
 			userService.deleteUser(user.getID());
 			jwtUtil.blacklistToken(token);
 			return ResponseEntity.status(HttpStatus.OK).build();
-		} catch (EntityNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
 	}	
 	
-	@PostMapping("/addcredit/{amount}")
-	public ResponseEntity<String> addCreditToUser(@RequestHeader("Authorization") String authHeader, @PathVariable Double amount){
-		try {
+	@PostMapping("/purchase/{creditCardId}/{amount}/{applyCredits}")
+	public ResponseEntity<String> purchase(@RequestHeader("Authorization") String authHeader, @PathVariable Long creditCardId, @PathVariable Double amount, @PathVariable Boolean applyCredits){
 			String username = jwtUtil.getUsername(authHeader);
 			User user = userService.loadByUsername(username);
-			user = userService.addCreditToUser(user.getID(), amount);
-			String response = amount + " credit has been added to " + user.getUsername() + "'s account.";
+			userService.purchase(user.getID(), creditCardId, amount, applyCredits);
+			String response = amount + " has been charged by " + user.getUsername() + ".";
 			return ResponseEntity.status(HttpStatus.OK).body(response);
-		} catch (EntityNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
 	}
 	
-	@PostMapping("/register/{creditCardId}")
-	public ResponseEntity<RegisteredUser> register(@RequestHeader("Authorization") String authHeader, @PathVariable Long creditCardId){
-		try {
+	@PostMapping("/refund/{creditCardId}/{amount}")
+	public ResponseEntity<String> refund(@RequestHeader("Authorization") String authHeader, @PathVariable Long creditCardId, @PathVariable Double amount){
 			String username = jwtUtil.getUsername(authHeader);
 			User user = userService.loadByUsername(username);
-			RegisteredUser registeredUser = userService.register(user.getID(), creditCardId);
+			userService.refund(user.getID(), creditCardId, amount);
+			String response = amount + " has been charged by " + user.getUsername() + ".";
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+	
+	@PostMapping("/register")
+	public ResponseEntity<?> register(@RequestHeader("Authorization") String authHeader, @RequestBody CreditCard creditCard){
+			String username = jwtUtil.getUsername(authHeader);
+			User user = userService.loadByUsername(username);
+			RegisteredUser registeredUser = userService.register(user.getID(), creditCard);
 			return ResponseEntity.status(HttpStatus.OK).body(registeredUser);
-		} catch (EntityNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
 	}
-	
-	@PostMapping("/applycredits/{amount}")
-	public ResponseEntity<String> applyCredits(@RequestHeader("Authorization") String authHeader, @PathVariable Double amount){
-		try {
-			String username = jwtUtil.getUsername(authHeader);
-			User user = userService.loadByUsername(username);
-			Double remaining = userService.applyCredits(user.getID(), amount);
-			String response = (amount - remaining) + " credit has been applied to the requested amount. " + remaining + " of requested amount remaining.";
-			return ResponseEntity.status(HttpStatus.OK).body(response);
-		} catch (EntityNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
-	}	
 }

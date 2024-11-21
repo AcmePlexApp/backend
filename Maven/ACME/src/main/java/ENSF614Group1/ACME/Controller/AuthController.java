@@ -28,13 +28,15 @@ public class AuthController {
     @Autowired private UserService userService;
     
     @PostMapping("/create")
-    public ResponseEntity<?> register(@RequestBody Map<String, String> request) {
+    public ResponseEntity<String> register(@RequestBody Map<String, String> request) {
         String username = request.get("username");
         String password = request.get("password");
         String email = request.get("email");
         try {
             User user = userService.createUser(username, password, email);
-            return ResponseEntity.ok().body(user);
+            String token = jwtUtil.generateToken(username);
+            return ResponseEntity.ok().body("{\"token\": \"" + token + "\"}");
+            
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -49,7 +51,6 @@ public class AuthController {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         User user = userService.loadByUsername(username);
         String token = jwtUtil.generateToken(username);
-        
         return ResponseEntity.ok().body("{\"token\": \"" + token + "\"}");
     }
     
