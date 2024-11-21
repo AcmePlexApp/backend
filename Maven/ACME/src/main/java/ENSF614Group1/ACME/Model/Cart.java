@@ -24,7 +24,7 @@ public class Cart {
 	@JoinColumn(name = "user_id")
 	private User user;
 	
-	@OneToMany(mappedBy = "cart", cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "cart")
 	private List<Ticket> tickets = new ArrayList<>();
 	
 	public Long getId() {return id;}
