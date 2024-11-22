@@ -47,7 +47,7 @@ public class ShowtimeService {
 			throw new EntityNotFoundException("Showtime does not exist.");
 		}
 		Showtime s = showtime.get();
-		s.setTimeOfDay(showtimeDetails.getTimeOfDay());
+		s.setDateTime(showtimeDetails.getDateTime());
 		return showtimeRepository.save(s);
 	}
 	
