@@ -97,10 +97,10 @@ public class UserController {
 		 return ResponseEntity.status(HttpStatus.OK).body(tickets);
 	 }
 	 
-	 @PostMapping("/cart/purchase")
+	 @PostMapping("/cart/purchase/{applyCredits}")
 	 public ResponseEntity<String> purchaseTicketsInCart(@RequestHeader("Authorization") String authHeader, 
 			 @RequestBody(required = false) CreditCard creditCard, 
-			 @RequestBody Boolean applyCredits){
+			 @PathVariable boolean applyCredits){
 		 String username = jwtUtil.getUsername(authHeader);
 		 User user = userService.loadByUsername(username);
 		 userService.purchaseTicketsInCart(user.getID(), creditCard, applyCredits);

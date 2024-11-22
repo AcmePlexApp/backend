@@ -28,6 +28,7 @@ public class UserService {
 	@Autowired private CreditRepository creditRepository;
 	@Autowired private SeatRepository seatRepository;
 	@Autowired private TicketRepository ticketRepository;
+	@Autowired private CartRepository cartRepository;
 	
     @PersistenceContext private EntityManager entityManager;
 	
@@ -55,6 +56,7 @@ public class UserService {
 		user.setUsername(formattedUsername);
 		user.setPassword(encodedPassword);
 		user.setEmail(formattedEmail);
+		user.setCart(new Cart(user));
 		return userRepository.save(user);
 	}
 	
@@ -266,14 +268,14 @@ public class UserService {
 		if (optSeat.isEmpty()) {
 			throw new EntityNotFoundException("Seat does not exist.");
 		}
-		User user = optUser.get();
+		Cart cart = optUser.get().getCart();
 		Seat seat = optSeat.get();
 		if (seat.getStatus() == SeatStatus.AVAILABLE) {
-			Ticket ticket = new Ticket(user, seat);
-			user.getCart().getTickets().add(ticket);
+			Ticket ticket = new Ticket(cart, seat);
+			cart.getTickets().add(ticket);
 			seat.setStatus(SeatStatus.INCART);
 			ticketRepository.save(ticket);
-			userRepository.save(user);
+			cartRepository.save(cart);
 			seatRepository.save(seat);
 		} else {
 			throw new RuntimeException("Seat is not available.");
@@ -290,16 +292,16 @@ public class UserService {
 		if (optTicket.isEmpty()) {
 			throw new EntityNotFoundException("Ticket does not exist.");
 		}
-		User user = optUser.get();
 		Ticket ticket = optTicket.get();
+		Cart cart = optUser.get().getCart();
 		Seat seat = ticket.getSeat();
-		if(!user.getCart().getTickets().contains(ticket)){
+		if(!cart.getTickets().contains(ticket)){
 			throw new RuntimeException("Ticket is not in the user's cart.");
 		}
 		seat.setStatus(SeatStatus.AVAILABLE);
-		user.getCart().getTickets().remove(ticket);
-		userRepository.save(user);
+		cart.getTickets().remove(ticket);
 		seatRepository.save(seat);
+		cartRepository.save(cart);
 		ticketRepository.delete(ticket);
 	}
 	
@@ -308,8 +310,8 @@ public class UserService {
 		if (optUser.isEmpty()) {
 			throw new EntityNotFoundException("User does not exist.");
 		}
-		User user = optUser.get();
-		return user.getCart().getTickets();		
+		Cart cart = optUser.get().getCart();
+		return cart.getTickets();		
 	}
 	
 	@Transactional
@@ -331,12 +333,15 @@ public class UserService {
 		
 		// Transfer tickets from cart to user after purchase
 		user.getTickets().addAll(cart.getTickets());
-		cart.getTickets().clear();
 		userRepository.save(user);
-		for(Ticket ticket : user.getTickets()) {
+		for(Ticket ticket : cart.getTickets()) {
 			ticket.getSeat().setStatus(SeatStatus.BOOKED);
+			ticket.setUser(user);
+			ticket.setCart(null);
 		}
 		ticketRepository.saveAll(user.getTickets());
+		cart.getTickets().clear();
+		cartRepository.save(cart);
 	}
 	
 	public List<Ticket> getUserTickets(Long userId){

@@ -1,5 +1,9 @@
 package ENSF614Group1.ACME.Model;
 
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -14,38 +18,40 @@ public class Ticket {
     
     @ManyToOne
     @JoinColumn(name = "cart_id")
+    @JsonIgnore
     private Cart cart;
     
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
     
-//    private TicketStatus status;
+    private String theaterName;
+    private String movieName;
+    private LocalDateTime showtime;
     
     public Long getID() {return id;}
     public User getUser() {return user;}
     public Seat getSeat() {return seat;}
     public Cart getCart() {return cart;}
-//    public TicketStatus getStatus() {return status;} 
+    public String getTheaterName() {return theaterName;}
+    public String getMovieName() {return movieName;}
+    public LocalDateTime getShowtime() {return showtime;}
     
     public void setUser(User user) {this.user = user;}
     public void setSeat(Seat seat) {this.seat = seat;}
     public void setCart(Cart cart) {this.cart = cart;}
-//    public void setStatus(TicketStatus status) {this.status = status;}
     
     public Ticket() {
     }
     
-    public Ticket(User user, Seat seat) {
-    	this.user = user;
-    	this.cart = user.getCart();
+    public Ticket(Cart cart, Seat seat) {
+    	this.user = null;
+    	this.cart = cart;
     	this.seat = seat;
-//    	this.status = TicketStatus.INCART;
+    	this.theaterName = seat.getShowtime().getTheater().getName();
+    	this.movieName = seat.getShowtime().getTheater().getMovie().getTitle();
+    	this.showtime = seat.getShowtime().getDateTime();
     }
-    
-//    public enum TicketStatus {
-//	    INCART,
-//	    PURCHASED
-//	}
     
 }
