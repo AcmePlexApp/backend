@@ -118,7 +118,7 @@ public class UserController {
 	 @DeleteMapping("/cancelticket/{ticketId}")
 	 public ResponseEntity<String> cancelPurchasedTicket(@RequestHeader("Authorization") String authHeader, 
 			 @PathVariable Long ticketId, 
-			 @RequestBody CreditCard creditCard){
+			 @RequestBody(required = false) CreditCard creditCard){
 		 String username = jwtUtil.getUsername(authHeader);
 		 User user = userService.loadByUsername(username);
 		 userService.cancelPurchasedTicket(user.getID(), ticketId, creditCard);
