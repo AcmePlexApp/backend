@@ -6,7 +6,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ENSF614Group1.ACME.Repository.*;
-import ch.qos.logback.core.util.Duration;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
@@ -16,7 +15,6 @@ import ENSF614Group1.ACME.Model.Seat.SeatStatus;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -305,6 +303,15 @@ public class UserService {
 		ticketRepository.delete(ticket);
 	}
 	
+	public List<Ticket> getCart(Long userId) {
+		Optional<User> optUser = userRepository.findById(userId);
+		if (optUser.isEmpty()) {
+			throw new EntityNotFoundException("User does not exist.");
+		}
+		User user = optUser.get();
+		return user.getCart().getTickets();		
+	}
+	
 	@Transactional
 	public void purchaseTicketsInCart(Long userId, CreditCard cc, boolean applyCredits) {
 		Optional<User> optUser = userRepository.findById(userId);
@@ -330,6 +337,15 @@ public class UserService {
 			ticket.getSeat().setStatus(SeatStatus.BOOKED);
 		}
 		ticketRepository.saveAll(user.getTickets());
+	}
+	
+	public List<Ticket> getUserTickets(Long userId){
+		Optional<User> optUser = userRepository.findById(userId);
+		if (optUser.isEmpty()) {
+			throw new EntityNotFoundException("User does not exist.");
+		}
+		User user = optUser.get();
+		return user.getTickets();
 	}
 	
 	@Transactional

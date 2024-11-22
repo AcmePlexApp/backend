@@ -1,5 +1,7 @@
 package ENSF614Group1.ACME.Controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ENSF614Group1.ACME.Model.CreditCard;
 import ENSF614Group1.ACME.Model.RegisteredUser;
+import ENSF614Group1.ACME.Model.Ticket;
 import ENSF614Group1.ACME.Model.User;
 import ENSF614Group1.ACME.Security.JWTUtil;
 import ENSF614Group1.ACME.Service.UserService;
@@ -69,4 +72,57 @@ public class UserController {
 			RegisteredUser registeredUser = userService.register(user.getID(), creditCard);
 			return ResponseEntity.status(HttpStatus.OK).body(registeredUser);
 	}
+	
+	@PostMapping("/selectseat/{seatId}")
+	public ResponseEntity<String> addTicketToCart(@RequestHeader("Authorization") String authHeader, @PathVariable Long seatId){
+		String username = jwtUtil.getUsername(authHeader);
+		User user = userService.loadByUsername(username);
+		userService.addTicketToCart(user.getID(), seatId);
+		return ResponseEntity.status(HttpStatus.OK).body("Ticket added to cart.");
+	}
+	
+	 @DeleteMapping("/removeticket/{ticketId}")
+	 public ResponseEntity<String> removeTicketFromCart(@RequestHeader("Authorization") String authHeader, @PathVariable Long ticketId){
+		 String username = jwtUtil.getUsername(authHeader);
+		 User user = userService.loadByUsername(username);
+		 userService.removeTicketFromCart(user.getID(), ticketId);
+		 return ResponseEntity.status(HttpStatus.OK).body("Ticket removed from cart.");
+	 }
+	 
+	 @GetMapping("/cart")
+	 public ResponseEntity<List<Ticket>> getCart(@RequestHeader("Authorization") String authHeader){
+		 String username = jwtUtil.getUsername(authHeader);
+		 User user = userService.loadByUsername(username);
+		 List<Ticket> tickets = userService.getCart(user.getID());
+		 return ResponseEntity.status(HttpStatus.OK).body(tickets);
+	 }
+	 
+	 @PostMapping("/cart/purchase")
+	 public ResponseEntity<String> purchaseTicketsInCart(@RequestHeader("Authorization") String authHeader, 
+			 @RequestBody(required = false) CreditCard creditCard, 
+			 @RequestBody Boolean applyCredits){
+		 String username = jwtUtil.getUsername(authHeader);
+		 User user = userService.loadByUsername(username);
+		 userService.purchaseTicketsInCart(user.getID(), creditCard, applyCredits);
+		 return ResponseEntity.status(HttpStatus.OK).body("Ticket(s) in cart purchased.");
+	 }
+	 
+	 @GetMapping("/tickets")
+	 public ResponseEntity<List<Ticket>> getUserTickets(@RequestHeader("Authorization") String authHeader){
+		 String username = jwtUtil.getUsername(authHeader);
+		 User user = userService.loadByUsername(username);
+		 List<Ticket> tickets = userService.getUserTickets(user.getID());
+		 return ResponseEntity.status(HttpStatus.OK).body(tickets);
+	 }
+	 
+	 @DeleteMapping("/cancelticket/{ticketId}")
+	 public ResponseEntity<String> cancelPurchasedTicket(@RequestHeader("Authorization") String authHeader, 
+			 @PathVariable Long ticketId, 
+			 @RequestBody CreditCard creditCard){
+		 String username = jwtUtil.getUsername(authHeader);
+		 User user = userService.loadByUsername(username);
+		 userService.cancelPurchasedTicket(user.getID(), ticketId, creditCard);
+		 return ResponseEntity.status(HttpStatus.OK).body("Ticket successfully cancelled.");
+	 }
+	
 }
