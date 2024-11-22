@@ -6,9 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class User {
 	
 	static Double REFUND_RATE = 0.85;
@@ -70,7 +74,7 @@ public class User {
     	this.username = username;
     	this.password = password;
     	this.email = email;
-    	
+    	this.cart = new Cart(this);
     }
     
     
@@ -79,6 +83,7 @@ public class User {
     	this.username = user.username;
     	this.password = user.password;
     	this.email = user.email;
+    	this.cart = new Cart(this);
     }
     
     public boolean isRegistered() {

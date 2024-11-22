@@ -40,6 +40,7 @@ public class Seat {
 	
 	@ManyToOne
 	@JoinColumn(name = "showtime_id", nullable = false)
+	@JsonIgnore
 	private Showtime showtime;
 	
 	@OneToOne(mappedBy = "seat")
