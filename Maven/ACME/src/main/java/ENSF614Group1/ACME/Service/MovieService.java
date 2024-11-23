@@ -40,10 +40,15 @@ public class MovieService {
 	@Autowired
 	public NewMovieNotificationRepository newMovieNotificationRepository;
 	
+	@Autowired
+	public EmailService emailService;
+	
 	@Transactional
 	public Movie createMovie(Movie movie) {
 		
-		return movieRepository.save(movie);
+		Movie saved = movieRepository.save(movie);
+		createNewMovieNotifications(saved);
+		return saved;
 	}
 	
 	public List<Movie> getAllMovies(){
@@ -119,6 +124,7 @@ public class MovieService {
 			String title = "Hey " + registeredUser.getUsername() + ", " + movie.getTitle() + " is releasing soon!";
 			NewMovieNotification newMovieNotification = new NewMovieNotification(title, body, LocalDateTime.now(), registeredUser.getEmail());
 			NewMovieNotification saved = newMovieNotificationRepository.save(newMovieNotification);
+			emailService.sendEmail(saved);
 			allNotifications.add(saved);
 		}
 		return allNotifications;
