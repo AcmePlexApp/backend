@@ -1,6 +1,7 @@
 package ENSF614Group1.ACME.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -9,8 +10,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import ENSF614Group1.ACME.Model.CreditCard;
 import ENSF614Group1.ACME.Model.Movie;
+import ENSF614Group1.ACME.Model.NewMovieNotification;
+import ENSF614Group1.ACME.Model.Payment;
+import ENSF614Group1.ACME.Model.Receipt;
+import ENSF614Group1.ACME.Model.RegisteredUser;
+import ENSF614Group1.ACME.Model.Theater;
+import ENSF614Group1.ACME.Model.Ticket;
+import ENSF614Group1.ACME.Model.User;
 import ENSF614Group1.ACME.Repository.MovieRepository;
+import ENSF614Group1.ACME.Repository.NewMovieNotificationRepository;
+import ENSF614Group1.ACME.Repository.RegisteredUserRepository;
 import ENSF614Group1.ACME.Repository.TheaterRepository;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -23,9 +34,21 @@ public class MovieService {
 	@Autowired
 	public TheaterRepository theaterRepository;
 	
+	@Autowired
+	public RegisteredUserRepository registeredUserRepository;
+	
+	@Autowired
+	public NewMovieNotificationRepository newMovieNotificationRepository;
+	
+	@Autowired
+	public EmailService emailService;
+	
 	@Transactional
 	public Movie createMovie(Movie movie) {
-		return movieRepository.save(movie);
+		
+		Movie saved = movieRepository.save(movie);
+		createNewMovieNotifications(saved);
+		return saved;
 	}
 	
 	public List<Movie> getAllMovies(){
@@ -82,6 +105,29 @@ public class MovieService {
 			throw new EntityNotFoundException("Movie does not exist.");
 		}
 		movieRepository.deleteById(id);
+	}
+	
+	@Transactional
+	private List<NewMovieNotification> createNewMovieNotifications(Movie movie) {
+		LocalDate releaseDate = movie.getReleaseDate();
+		List<NewMovieNotification> allNotifications = new ArrayList<>();
+		if (!releaseDate.isAfter(LocalDate.now())) {return allNotifications;}
+		List<RegisteredUser> allRegisteredUsers = registeredUserRepository.findAll();
+		String body = movie.getTitle() + " is releasing on " + releaseDate.toString() + "\n\n";
+		body = body.concat(movie.getDescription() + "\n");
+		body = body.concat(movie.getDurationInMinutes() + " minutes long\n");
+		body = body.concat("Showing at:\n");
+		for(Theater theater : movie.getTheaters()) {
+			body = body.concat("   " + theater.getName() + "\n");
+		}
+		for (RegisteredUser registeredUser : allRegisteredUsers) {
+			String title = "Hey " + registeredUser.getUsername() + ", " + movie.getTitle() + " is releasing soon!";
+			NewMovieNotification newMovieNotification = new NewMovieNotification(title, body, LocalDateTime.now(), registeredUser.getEmail());
+			NewMovieNotification saved = newMovieNotificationRepository.save(newMovieNotification);
+			emailService.sendEmail(saved);
+			allNotifications.add(saved);
+		}
+		return allNotifications;
 	}
 	
 }

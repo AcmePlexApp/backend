@@ -24,7 +24,6 @@ public class AuthController {
 
     @Autowired private JWTUtil jwtUtil;
     
-    @Autowired private UserDetailsService userDetailsService;
     @Autowired private UserService userService;
     
     @PostMapping("/create")
@@ -43,7 +42,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
+    public ResponseEntity<String> login(@RequestBody Map<String, String> request) {
     	
         String username = request.get("username");
         String password = request.get("password");
@@ -55,7 +54,7 @@ public class AuthController {
     }
     
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String authHeader) {
         String token = jwtUtil.getAuthToken(authHeader);
     	if (token == null) {
             return ResponseEntity.badRequest().body("Authorization header is missing or invalid.");
