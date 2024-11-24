@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONObject;
+
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -18,6 +20,8 @@ import jakarta.persistence.OneToMany;
 @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Movie {
+	
+	static int DESCRIPTION_LENGTH = 255;
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,6 +39,21 @@ public class Movie {
 	
 	@JsonView(Views.Basic.class)
 	private LocalDate releaseDate;
+	
+	@JsonView(Views.Basic.class)
+	private String posterURL = "";
+	
+	@JsonView(Views.Basic.class)
+	private String backdropURL = "";
+	
+	@JsonView(Views.Basic.class)
+	private Double voteAverage = 0.0;
+	
+	@JsonView(Views.Basic.class)
+	private Double popularity = 0.0;
+	
+	@JsonView(Views.Basic.class)
+	private Long tmdbId = (long) 0;
     
 	@OneToMany(mappedBy = "movie")
 	@JsonView(Views.MovieDetail.class)
@@ -47,6 +66,7 @@ public class Movie {
     public int getDurationInMinutes() {return durationInMinutes;}
     public LocalDate getReleaseDate() {return releaseDate;}
     public List<Theater> getTheaters() {return theaters;}
+    public Long getTMDBId() {return tmdbId;}
     
     // Setters
     public void setTitle(String title) {this.title = title;}
@@ -64,4 +84,19 @@ public class Movie {
     	this.releaseDate = releaseDate;
     }
     
+    public Movie(JSONObject fromTMDBJSON) {
+    	if (fromTMDBJSON.getBoolean("adult") != false) {throw new IllegalArgumentException("Adult movies not allowed");}
+    	this.title = fromTMDBJSON.getString("title");
+    	String longDescription = fromTMDBJSON.getString("overview");
+    	this.description = longDescription.length() > DESCRIPTION_LENGTH ? longDescription.substring(0, DESCRIPTION_LENGTH) : longDescription;
+    	String releaseDateString = fromTMDBJSON.getString("release_date");
+    	this.releaseDate = LocalDate.parse(releaseDateString);
+    	this.durationInMinutes = 0; // TMDBJSON doesn't provide this.
+    	this.posterURL = fromTMDBJSON.getString("poster_path");
+    	this.backdropURL = fromTMDBJSON.getString("backdrop_path");
+    	this.voteAverage = fromTMDBJSON.getDouble("vote_average");
+    	this.popularity = fromTMDBJSON.getDouble("popularity");
+    	this.tmdbId = fromTMDBJSON.getLong("id");
+    }
+
 }

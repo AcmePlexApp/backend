@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "email_type", discriminatorType = DiscriminatorType.STRING)
 public class Email {
+	
+	static int BODY_LENGTH = 255;
 		
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +30,10 @@ public class Email {
     public String getToEmail() {return toEmail;}
     
     public void setTitle(String title) {this.title = title;}
-    public void setBody(String body) {this.body = body;}
+    public void setBody(String body) {
+    	String longBody = body;
+    	this.body = longBody.length() > BODY_LENGTH ? longBody.substring(0, BODY_LENGTH) : longBody;
+    			;}
     public void setSentAt(LocalDateTime sentAt) {this.sentAt = sentAt;}
     public void setToEmail(String toEmail) {this.toEmail = toEmail;}
 
@@ -44,7 +49,8 @@ public class Email {
     	)
     {
     	this.title = title;
-    	this.body = body;
+    	String longBody = body;
+    	this.body = longBody.length() > BODY_LENGTH ? longBody.substring(0, BODY_LENGTH) : longBody;
     	this.sentAt = sentAt;
     	this.toEmail = toEmail;    	
     }

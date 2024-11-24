@@ -7,4 +7,5 @@ import ENSF614Group1.ACME.Model.Movie;
 
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Long> {
+	Boolean existsBytmdbId(Long tmdbId);
 }
