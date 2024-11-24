@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,9 +44,19 @@ public class MovieService {
 	@Autowired
 	public EmailService emailService;
 	
+	
+	
 	@Transactional
 	public Movie createMovie(Movie movie) {
 		
+		Movie saved = movieRepository.save(movie);
+		createNewMovieNotifications(saved);
+		return saved;
+	}
+	
+	@Transactional
+	public Movie createTMDBMovie(Movie movie) throws DuplicateKeyException {
+		if(movieRepository.existsBytmdbId(movie.getTMDBId())) {throw new DuplicateKeyException("Movie already in database"); }
 		Movie saved = movieRepository.save(movie);
 		createNewMovieNotifications(saved);
 		return saved;
