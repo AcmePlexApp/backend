@@ -1,4 +1,4 @@
-package ENSF614Group1.ACME.Security;
+package ENSF614Group1.ACME.Helpers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -15,12 +15,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import ENSF614Group1.ACME.Service.CustomUserDetailsService;
+
 @Configuration
 public class SecurityConfig {
-	
-	@Autowired
-    private CustomUserDetailsService customUserDetailsService;
-	
+		
 	@Autowired private JWTAuthFilter jwtAuthFilter;
 	
 	@Bean
@@ -71,7 +70,7 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class)
-                   .userDetailsService(customUserDetailsService)
+                   .userDetailsService(jwtAuthFilter.getUserDetailsService())
                    .and()
                    .build();
     }

@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import ENSF614Group1.ACME.Helpers.JWTUtil;
 import ENSF614Group1.ACME.Model.CreditCard;
 import ENSF614Group1.ACME.Model.RegisteredUser;
 import ENSF614Group1.ACME.Model.Ticket;
 import ENSF614Group1.ACME.Model.User;
-import ENSF614Group1.ACME.Security.JWTUtil;
 import ENSF614Group1.ACME.Service.UserService;
 
 @RestController

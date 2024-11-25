@@ -1,4 +1,4 @@
-package ENSF614Group1.ACME.Security;
+package ENSF614Group1.ACME.Helpers;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
+import ENSF614Group1.ACME.Service.CustomUserDetailsService;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -23,6 +25,8 @@ public class JWTAuthFilter extends OncePerRequestFilter {
 
     @Autowired private JWTUtil jwtUtil;
     @Autowired private CustomUserDetailsService userDetailsService;
+    
+    public CustomUserDetailsService getUserDetailsService() {return userDetailsService;}
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
