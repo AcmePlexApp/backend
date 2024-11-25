@@ -35,9 +35,6 @@ public class Movie {
     private String description;
 	
 	@JsonView(Views.Basic.class)
-    private int durationInMinutes;
-	
-	@JsonView(Views.Basic.class)
 	private LocalDate releaseDate;
 	
 	@JsonView(Views.Basic.class)
@@ -63,7 +60,6 @@ public class Movie {
     public Long getId() {return id;}
     public String getTitle() {return title;}
     public String getDescription() {return description;}
-    public int getDurationInMinutes() {return durationInMinutes;}
     public LocalDate getReleaseDate() {return releaseDate;}
     public List<Theater> getTheaters() {return theaters;}
     public Long getTMDBId() {return tmdbId;}
@@ -71,16 +67,14 @@ public class Movie {
     // Setters
     public void setTitle(String title) {this.title = title;}
     public void setDescription(String description) {this.description = description;}
-    public void setDurationInMinutes(int durationInMinutes) {this.durationInMinutes = durationInMinutes;}
     public void setReleaseDate(LocalDate releaseDate) {this.releaseDate = releaseDate;}
     public void setTheaters(List<Theater> theaters) {this.theaters = theaters;}
     
     // Constructors
     public Movie() {}
-    public Movie(String title, String description, int durationInMinutes, LocalDate releaseDate) {
+    public Movie(String title, String description, LocalDate releaseDate) {
     	this.title = title;
     	this.description = description;
-    	this.durationInMinutes = durationInMinutes;
     	this.releaseDate = releaseDate;
     }
     
@@ -91,7 +85,6 @@ public class Movie {
     	this.description = longDescription.length() > DESCRIPTION_LENGTH ? longDescription.substring(0, DESCRIPTION_LENGTH) : longDescription;
     	String releaseDateString = fromTMDBJSON.getString("release_date");
     	this.releaseDate = LocalDate.parse(releaseDateString);
-    	this.durationInMinutes = 0; // TMDBJSON doesn't provide this.
     	this.posterURL = fromTMDBJSON.getString("poster_path");
     	this.backdropURL = fromTMDBJSON.getString("backdrop_path");
     	this.voteAverage = fromTMDBJSON.getDouble("vote_average");
