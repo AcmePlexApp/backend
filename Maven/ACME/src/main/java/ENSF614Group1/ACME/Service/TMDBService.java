@@ -33,8 +33,6 @@ public class TMDBService {
 	@Autowired private MovieService movieService;
 	
 	static String API_KEY = "30d1d9c9f66f1427cca9a10228a4268d";
-	public JSONArray nowPlayingJSONMovies;
-	public JSONArray upcomingJSONMovies;
 	
 	public List<Movie> nowPlaying = new ArrayList<>();
 	public List<Movie> upcoming = new ArrayList<>();
@@ -43,9 +41,10 @@ public class TMDBService {
 	@EventListener(ApplicationReadyEvent.class)
 	public void initializeTMDBService() {
 		try {
-			nowPlayingJSONMovies = getNowPlaying();
-			upcomingJSONMovies = getUpcoming();
+			JSONArray nowPlayingJSONMovies = getNowPlaying();
+			JSONArray upcomingJSONMovies = getUpcoming();
 			System.out.println("Populating Movie Database from TMDB...");
+			
 			for (int i = 0; i < nowPlayingJSONMovies.length(); i++) {
 	            JSONObject jsonMovie = nowPlayingJSONMovies.getJSONObject(i);
 	            nowPlaying.add(new Movie(jsonMovie));
