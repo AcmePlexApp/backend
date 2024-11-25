@@ -51,15 +51,24 @@ public class Theater {
 	public Theater() {}
 	public Theater(String name) {
 		this.name = name;
-		createShowtimes();
+		createShowtimes(LocalDate.now());
+	}
+	public Theater(String name, Movie movie) {
+		this.name = name;
+		this.movie = movie;
+		LocalDate startDate = LocalDate.now();
+		if (movie.getReleaseDate().isAfter(startDate)) {
+			startDate = movie.getReleaseDate();
+		}
+		createShowtimes(startDate);
 	}
 	
 	// Methods
-	private void createShowtimes() {
-		LocalDate today = LocalDate.now();
-		for(int i = 0; i < 14; i++) {
-			showtimes.add(new Showtime(LocalDateTime.of(today.plusDays(i), LocalTime.of(19, 0)), this));   // 7:00 PM
-			showtimes.add(new Showtime(LocalDateTime.of(today.plusDays(i), LocalTime.of(21, 0)), this));   // 9:00 PM
+	private void createShowtimes(LocalDate date) {
+		for(int i = 0; i < 30; i++) {
+			showtimes.add(new Showtime(LocalDateTime.of(date.plusDays(i), LocalTime.of(16, 0)), this));   // 4:00 PM
+			showtimes.add(new Showtime(LocalDateTime.of(date.plusDays(i), LocalTime.of(19, 0)), this));   // 7:00 PM
+			showtimes.add(new Showtime(LocalDateTime.of(date.plusDays(i), LocalTime.of(22, 0)), this));   // 10:00 PM
 		}
 	}
 	
