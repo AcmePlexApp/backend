@@ -23,6 +23,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +35,10 @@ public class TMDBService {
 	static String API_KEY = "30d1d9c9f66f1427cca9a10228a4268d";
 	public JSONArray nowPlayingJSONMovies;
 	public JSONArray upcomingJSONMovies;
+	
+	public List<Movie> nowPlaying = new ArrayList<>();
+	public List<Movie> upcoming = new ArrayList<>();
+	
 			
 	@EventListener(ApplicationReadyEvent.class)
 	public void initializeTMDBService() {
@@ -43,27 +48,17 @@ public class TMDBService {
 			System.out.println("Populating Movie Database from TMDB...");
 			for (int i = 0; i < nowPlayingJSONMovies.length(); i++) {
 	            JSONObject jsonMovie = nowPlayingJSONMovies.getJSONObject(i);
-	            placeJSONMovieInDatabase(jsonMovie);
+	            nowPlaying.add(new Movie(jsonMovie));
 			}
 			for (int i = 0; i < upcomingJSONMovies.length(); i++) {
 	            JSONObject jsonMovie = upcomingJSONMovies.getJSONObject(i);
-	            placeJSONMovieInDatabase(jsonMovie);
-			}
+	            upcoming.add(new Movie(jsonMovie));
+	        }
 			System.out.println("TMDBService Initialized Successfully");
 			
 		} catch (Exception e) {
 			System.out.println("Error Initializing TMDBService - " + e.getLocalizedMessage());
 		}
-	}
-	
-	private void placeJSONMovieInDatabase(JSONObject jsonMovie) {
-		Movie movie = new Movie(jsonMovie);
-        try {
-        	movieService.createTMDBMovie(movie);
-        	System.out.print("+");
-        } catch (DuplicateKeyException e) {
-        	System.out.print("x");
-        }
 	}
 	
 	private JSONArray getMoviesFrom(String urlString) throws InterruptedException, IOException {
