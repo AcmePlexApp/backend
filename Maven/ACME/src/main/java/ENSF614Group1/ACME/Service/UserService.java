@@ -24,7 +24,6 @@ public class UserService {
 	@Autowired private UserRepository userRepository;
 	@Autowired private RegisteredUserRepository registeredUserRepository;
 	@Autowired private CreditCardRepository creditCardRepository;
-	@Autowired private BankRepository bankRepository;
 	@Autowired private CreditRepository creditRepository;
 	@Autowired private SeatRepository seatRepository;
 	@Autowired private TicketRepository ticketRepository;
@@ -116,12 +115,6 @@ public class UserService {
 		if (applyCredits) {
 			remainingAmount = applyCredits(user.getID(), amount);
 		}
-		Optional<Bank> optBank = bankRepository.findById(creditCard.getBank().getID());
-		if (optBank.isEmpty()) {
-			throw new EntityNotFoundException("User could not purchase.  Cannot find bank.");
-		}
-		Bank bank = optBank.get();
-		creditCard.setBank(bank);
 		creditCard.charge(remainingAmount);
 	}
 	
@@ -146,12 +139,6 @@ public class UserService {
 			}
 			creditCard = optCreditCard.get();
 		}
-		Optional<Bank> optBank = bankRepository.findById(creditCard.getBank().getID());
-		if (optBank.isEmpty()) {
-			throw new EntityNotFoundException("User could not purchase.  Cannot find bank.");
-		}
-		Bank bank = optBank.get();
-		creditCard.setBank(bank);
 		Double creditAmount = amount * (1.0 - user.refundRate());
 		Double refundAmount = amount - creditAmount;
 		if (creditAmount > 0.001) {
@@ -183,12 +170,6 @@ public class UserService {
 		if (user.isRegistered()) {
 			throw new RuntimeException("User could not be registered.  User is already registered");
 		}
-		Optional<Bank> optBank = bankRepository.findById(cc.getBank().getID());
-		if (optBank.isEmpty()) {
-			throw new EntityNotFoundException("User could not be registered.  Cannot find bank.");
-		}
-		Bank bank = optBank.get();
-		cc.setBank(bank);
 		CreditCard creditCard = creditCardRepository.save(cc);
 		// Specialization of a Generalized class requires manual SQL commands.
 		entityManager.createNativeQuery("UPDATE user SET user_type = :newType WHERE id = :userId")
