@@ -1,7 +1,6 @@
 package ENSF614Group1.ACME.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.json;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -34,16 +33,29 @@ public class TMDBService {
 	
 	static String API_KEY = "30d1d9c9f66f1427cca9a10228a4268d";
 	
-	public List<Movie> nowPlaying = new ArrayList<>();
-	public List<Movie> upcoming = new ArrayList<>();
+	private List<Movie> nowPlaying = new ArrayList<>();
+	private List<Movie> upcoming = new ArrayList<>();
 	
-			
-	@EventListener(ApplicationReadyEvent.class)
+	public List<Movie> getNowPlaying() {return nowPlaying;}
+	public List<Movie> getUpcoming() {return upcoming;}
+	
+	public Optional<Movie> getNowPlayingByTitle(String withTitle) {
+		return nowPlaying.stream()
+            .filter(movie -> movie.getTitle().equals(withTitle))
+            .findFirst();
+	}
+	
+	public Optional<Movie> getUpcomingByTitle(String withTitle) {
+		return upcoming.stream()
+            .filter(movie -> movie.getTitle().equals(withTitle))
+            .findFirst();
+	}
+	
 	public void initializeTMDBService() {
 		try {
-			JSONArray nowPlayingJSONMovies = getNowPlaying();
-			JSONArray upcomingJSONMovies = getUpcoming();
-			System.out.println("Populating Movie Database from TMDB...");
+			JSONArray nowPlayingJSONMovies = getNowPlayingFromTMDB();
+			JSONArray upcomingJSONMovies = getUpcomingFromTMDB();
+			System.out.println("Initializing TMDBService...");
 			
 			for (int i = 0; i < nowPlayingJSONMovies.length(); i++) {
 	            JSONObject jsonMovie = nowPlayingJSONMovies.getJSONObject(i);
@@ -60,7 +72,7 @@ public class TMDBService {
 		}
 	}
 	
-	private JSONArray getMoviesFrom(String urlString) throws InterruptedException, IOException {
+	private JSONArray getMoviesFromTMDB(String urlString) throws InterruptedException, IOException {
     	HttpRequest request = HttpRequest.newBuilder()
     		    .uri(URI.create(urlString + "&api_key=" + API_KEY))
     		    //.header("Authorization", "Bearer " + API_KEY)
@@ -71,12 +83,12 @@ public class TMDBService {
     		return object.getJSONArray("results");
     }
 	
-    private JSONArray getNowPlaying() throws InterruptedException, IOException {
-    	return getMoviesFrom("https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1");
+    private JSONArray getNowPlayingFromTMDB() throws InterruptedException, IOException {
+    	return getMoviesFromTMDB("https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1");
     }
     
-    private JSONArray getUpcoming() throws InterruptedException, IOException {
-    	return getMoviesFrom("https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1");
+    private JSONArray getUpcomingFromTMDB() throws InterruptedException, IOException {
+    	return getMoviesFromTMDB("https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1");
     }
     
     

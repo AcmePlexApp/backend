@@ -105,7 +105,6 @@ public class MovieService {
 		Movie m = movie.get();
 		m.setTitle(movieDetails.getTitle());
 		m.setDescription(movieDetails.getDescription());
-		m.setDurationInMinutes(movieDetails.getDurationInMinutes());
 		m.setReleaseDate(movieDetails.getReleaseDate());
 		return movieRepository.save(m);
 	}
@@ -126,7 +125,6 @@ public class MovieService {
 		List<RegisteredUser> allRegisteredUsers = registeredUserRepository.findAll();
 		String body = movie.getTitle() + " is releasing on " + releaseDate.toString() + "\n\n";
 		body = body.concat(movie.getDescription() + "\n");
-		body = body.concat(movie.getDurationInMinutes() + " minutes long\n");
 		body = body.concat("Showing at:\n");
 		for(Theater theater : movie.getTheaters()) {
 			body = body.concat("   " + theater.getName() + "\n");
