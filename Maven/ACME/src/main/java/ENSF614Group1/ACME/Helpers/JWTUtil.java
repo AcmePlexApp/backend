@@ -1,4 +1,4 @@
-package ENSF614Group1.ACME.Security;
+package ENSF614Group1.ACME.Helpers;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

@@ -28,9 +28,7 @@ import java.util.Optional;
 
 @Service
 public class TMDBService {
-	
-	@Autowired private MovieService movieService;
-	
+		
 	static String API_KEY = "30d1d9c9f66f1427cca9a10228a4268d";
 	
 	private List<Movie> nowPlaying = new ArrayList<>();

@@ -9,8 +9,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
+import ENSF614Group1.ACME.Helpers.JWTUtil;
 import ENSF614Group1.ACME.Model.User;
-import ENSF614Group1.ACME.Security.JWTUtil;
 import ENSF614Group1.ACME.Service.UserService;
 
 import java.util.HashMap;
