@@ -1,5 +1,7 @@
 package ENSF614Group1.ACME.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -83,12 +85,20 @@ public class TheaterService {
 	public void addMovieToTheater(Long theaterId, Long movieId) {
 		Optional<Theater> theater = theaterRepository.findById(theaterId);
 		Optional<Movie> movie = movieRepository.findById(movieId);
-		if (theater.isEmpty() || movie.isEmpty()) {
-			throw new EntityNotFoundException("Entity does not exist.");
+		if (theater.isEmpty()) {
+			throw new EntityNotFoundException("Theater does not exist.");
+		}
+		if (movie.isEmpty()) {
+			throw new EntityNotFoundException("Movie does not exist.");
 		}
 		Theater t = theater.get();
 		Movie m = movie.get();
 		t.setMovie(m);
+//		LocalDate date = LocalDate.now();
+//		if(m.getReleaseDate().isAfter(date)) {
+//			date = m.getReleaseDate();
+//		}
+//		t.createShowtimes(date);
 		theaterRepository.save(t);
 	}
 	

@@ -21,7 +21,9 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -72,7 +74,7 @@ public class TMDBService {
 		}
 	}
 	
-	private JSONArray getMoviesFromTMDB(String urlString) throws InterruptedException, IOException {
+	public JSONArray getMoviesFromTMDB(String urlString) throws InterruptedException, IOException {
     	HttpRequest request = HttpRequest.newBuilder()
     		    .uri(URI.create(urlString + "&api_key=" + API_KEY))
     		    //.header("Authorization", "Bearer " + API_KEY)
@@ -83,13 +85,20 @@ public class TMDBService {
     		return object.getJSONArray("results");
     }
 	
-    private JSONArray getNowPlayingFromTMDB() throws InterruptedException, IOException {
+    public JSONArray getNowPlayingFromTMDB() throws InterruptedException, IOException {
     	return getMoviesFromTMDB("https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1");
     }
     
-    private JSONArray getUpcomingFromTMDB() throws InterruptedException, IOException {
+    public JSONArray getUpcomingFromTMDB() throws InterruptedException, IOException {
     	return getMoviesFromTMDB("https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1");
     }
     
-    
+    public JSONArray getMoviesByReleaseDate(LocalDate startDate, LocalDate endDate) throws InterruptedException, IOException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedStartDate = startDate.format(formatter);
+        String formattedEndDate = endDate.format(formatter);
+        String url = String.format("https://api.themoviedb.org/3/discover/movie?primary_release_date.gte=%s&primary_release_date.lte=%s", formattedStartDate, formattedEndDate);
+        
+        return getMoviesFromTMDB(url);
+    }
 }
