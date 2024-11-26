@@ -37,6 +37,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         	chain.doFilter(request, response);
         } else {
         	try {
+        		System.out.println("TOKEN!=NULL");
             	String username = jwtUtil.extractUsername(token);
             	jwtUtil.validateToken(token);
             	UserDetails userDetails = userDetailsService.loadUserByUsername(username);

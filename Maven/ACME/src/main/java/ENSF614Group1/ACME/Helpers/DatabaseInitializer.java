@@ -11,14 +11,22 @@ import org.springframework.stereotype.Component;
 
 import ENSF614Group1.ACME.Model.Movie;
 import ENSF614Group1.ACME.Model.Theater;
+import ENSF614Group1.ACME.Model.User;
 import ENSF614Group1.ACME.Repository.MovieRepository;
 import ENSF614Group1.ACME.Repository.TheaterRepository;
 import ENSF614Group1.ACME.Service.TMDBService;
 import ENSF614Group1.ACME.Service.TheaterService;
+import ENSF614Group1.ACME.Service.UserService;
 import jakarta.transaction.Transactional;
 
 @Component
 public class DatabaseInitializer {
+	
+	private static String ADMIN_NAME = "Admin";
+	private static String ADMIN_PASSWORD = "TheCanadians";
+	private static String ADMIN_EMAIL = "acmemovieplex@gmail.com";
+	private static String ADMIN_ROLE = "ROLE_ADMIN";
+
 	
 	@Autowired
 	private TheaterRepository theaterRepository;
@@ -30,7 +38,7 @@ public class DatabaseInitializer {
 	private TMDBService tmdbService;
 	
 	@Autowired
-	private TheaterService theaterservice;
+	private UserService userService;
 	
 	@EventListener(ApplicationReadyEvent.class)
 	@Transactional
@@ -43,6 +51,7 @@ public class DatabaseInitializer {
 		
 		// Creates 8 now playing movies and 2 upcoming movies
 		try {
+			User admin = userService.createUser(ADMIN_NAME, ADMIN_PASSWORD, ADMIN_EMAIL, ADMIN_ROLE);
 			JSONArray nowPlayingJSONMovies = tmdbService.getNowPlayingFromTMDB();
 			JSONArray upcomingJSONMovies = tmdbService.getMoviesByReleaseDate(LocalDate.now().plusDays(10), LocalDate.now().plusDays(40));
 			System.out.println("Initializing Test Database...");
