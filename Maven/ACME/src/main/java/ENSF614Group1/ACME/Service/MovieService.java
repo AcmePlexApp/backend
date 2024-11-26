@@ -124,11 +124,7 @@ public class MovieService {
 		if (!releaseDate.isAfter(LocalDate.now())) {return allNotifications;}
 		List<RegisteredUser> allRegisteredUsers = registeredUserRepository.findAll();
 		String body = movie.getTitle() + " is releasing on " + releaseDate.toString() + "\n\n";
-		body = body.concat(movie.getDescription() + "\n");
-		body = body.concat("Showing at:\n");
-		for(Theater theater : movie.getTheaters()) {
-			body = body.concat("   " + theater.getName() + "\n");
-		}
+		body = body.concat("Get your tickets on the AcmePlexApp now!!\n");
 		for (RegisteredUser registeredUser : allRegisteredUsers) {
 			String title = "Hey " + registeredUser.getUsername() + ", " + movie.getTitle() + " is releasing soon!";
 			NewMovieNotification newMovieNotification = new NewMovieNotification(title, body, LocalDateTime.now(), registeredUser.getEmail());
