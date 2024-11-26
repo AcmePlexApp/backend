@@ -254,6 +254,7 @@ public class UserService {
 		User user = optUser.get();
 		Cart cart = optUser.get().getCart();
 		Seat seat = optSeat.get();
+		Showtime showtime = seat.getShowtime();
 		if (seat.getStatus() != SeatStatus.AVAILABLE) {
 			throw new RuntimeException("Seat is not available.");
 			
@@ -263,6 +264,9 @@ public class UserService {
 		if (daysToRelease > 7 && !user.isRegistered()) {
 			throw new RuntimeException("Showing not available to public until a week before release date. "
 					+ "Access currently restricted to registered users.");
+		}
+		if(showtime.percentBooked() > 0.1) {
+			throw new RuntimeException("All pre purchase tickets have been taken.");
 		}
 		Ticket ticket = new Ticket(cart, seat);
 		cart.getTickets().add(ticket);
