@@ -23,6 +23,7 @@ public class User {
     private String username;
     private String password;
     private String email;
+    private String role = "";
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Credit> credits = new ArrayList<>();
@@ -40,6 +41,7 @@ public class User {
     public List<Credit> getCredits() {return credits;}
     public Cart getCart() {return cart;}
     public List<Ticket> getTickets(){return tickets;}
+    public String getRole() {return role;}
 
     
     public void setUsername(String username) {this.username = username;}
@@ -48,6 +50,7 @@ public class User {
     public void setCredits(List<Credit> credits) {this.credits = credits;}
     public void setCart(Cart cart) {this.cart = cart;}
     public void setTickets(List<Ticket> tickets) {this.tickets = tickets;}
+    public void setRole(String role) {this.role = role;}
     
     public void addCredit(Credit credit) {
     	credits.add(credit);
@@ -68,13 +71,16 @@ public class User {
     public User(
     		String username,
     		String password,
-    		String email
+    		String email,
+    		String role
     		)
     {
     	this.username = username;
     	this.password = password;
     	this.email = email;
+    	this.role = role;
     	this.cart = new Cart(this);
+    	
     }
     
     
@@ -83,6 +89,7 @@ public class User {
     	this.username = user.username;
     	this.password = user.password;
     	this.email = user.email;
+    	this.role = user.role;
     	this.cart = new Cart(this);
     }
     

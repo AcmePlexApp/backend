@@ -50,10 +50,25 @@ public class SecurityConfig {
         
         return http.build();
     }
+    
+    // SecurityFilterChain for ADMIN
+    @Bean
+    @Order(3)
+    public SecurityFilterChain adminSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+        	.securityMatcher("/admin/**")
+            .authorizeHttpRequests(authorize -> authorize
+            	.anyRequest().hasRole("ADMIN")
+            )
+            .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // Add custom filter
+        
+        return http.build();
+    }
 
     // SecurityFilterChain for All Other Requests
     @Bean
-    @Order(3)
+    @Order(4)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
         	.securityMatcher("/**")

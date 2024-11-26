@@ -39,7 +39,7 @@ public class UserService {
 	}
 	
 	@Transactional
-	public User createUser(String username, String password, String email) throws IllegalArgumentException {
+	public User createUser(String username, String password, String email, String role) throws IllegalArgumentException {
 		
 		PasswordEncoder encoder = new BCryptPasswordEncoder();
 		String encodedPassword = encoder.encode(password);
@@ -57,6 +57,7 @@ public class UserService {
 		user.setUsername(formattedUsername);
 		user.setPassword(encodedPassword);
 		user.setEmail(formattedEmail);
+		user.setRole(role);
 		user.setCart(new Cart(user));
 		return userRepository.save(user);
 	}
