@@ -1,4 +1,4 @@
-package ENSF614Group1.ACME.Exception;
+package ENSF614Group1.ACME.Helpers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
