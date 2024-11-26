@@ -12,6 +12,7 @@ import jakarta.persistence.PersistenceContext;
 import ENSF614Group1.ACME.Model.*;
 import ENSF614Group1.ACME.Model.Seat.SeatStatus;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class UserService {
 	@Autowired private SeatRepository seatRepository;
 	@Autowired private TicketRepository ticketRepository;
 	@Autowired private CartRepository cartRepository;
+	@Autowired private EmailService emailService;
 	
     @PersistenceContext private EntityManager entityManager;
 	
@@ -249,18 +251,25 @@ public class UserService {
 		if (optSeat.isEmpty()) {
 			throw new EntityNotFoundException("Seat does not exist.");
 		}
+		User user = optUser.get();
 		Cart cart = optUser.get().getCart();
 		Seat seat = optSeat.get();
-		if (seat.getStatus() == SeatStatus.AVAILABLE) {
-			Ticket ticket = new Ticket(cart, seat);
-			cart.getTickets().add(ticket);
-			seat.setStatus(SeatStatus.INCART);
-			ticketRepository.save(ticket);
-			cartRepository.save(cart);
-			seatRepository.save(seat);
-		} else {
+		if (seat.getStatus() != SeatStatus.AVAILABLE) {
 			throw new RuntimeException("Seat is not available.");
+			
 		}
+		LocalDate releaseDate = seat.getShowtime().getTheater().getMovie().getReleaseDate();
+		long daysToRelease = ChronoUnit.DAYS.between(LocalDate.now(), releaseDate);
+		if (daysToRelease > 7 && !user.isRegistered()) {
+			throw new RuntimeException("Showing not available to public until a week before release date. "
+					+ "Access currently restricted to registered users.");
+		}
+		Ticket ticket = new Ticket(cart, seat);
+		cart.getTickets().add(ticket);
+		seat.setStatus(SeatStatus.INCART);
+		ticketRepository.save(ticket);
+		cartRepository.save(cart);
+		seatRepository.save(seat);
 	}
 	
 	@Transactional
@@ -362,5 +371,5 @@ public class UserService {
 		seatRepository.save(seat);
 		userRepository.save(user);
 	}
-    
+
 }
