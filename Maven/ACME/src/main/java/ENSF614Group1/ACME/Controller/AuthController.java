@@ -4,16 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import ENSF614Group1.ACME.Helpers.JWTUtil;
 import ENSF614Group1.ACME.Model.User;
 import ENSF614Group1.ACME.Service.UserService;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
