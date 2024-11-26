@@ -117,7 +117,8 @@ public class UserService {
 		if (applyCredits) {
 			remainingAmount = applyCredits(user.getID(), amount);
 		}
-		creditCard.charge(remainingAmount);
+		creditCard.charge(remainingAmount);		
+		sendReceipt(user.getID(), creditCard, amount);
 	}
 	
 	@Transactional
@@ -254,6 +255,7 @@ public class UserService {
 		User user = optUser.get();
 		Cart cart = optUser.get().getCart();
 		Seat seat = optSeat.get();
+		Showtime showtime = seat.getShowtime();
 		if (seat.getStatus() != SeatStatus.AVAILABLE) {
 			throw new RuntimeException("Seat is not available.");
 			
@@ -263,6 +265,9 @@ public class UserService {
 		if (daysToRelease > 7 && !user.isRegistered()) {
 			throw new RuntimeException("Showing not available to public until a week before release date. "
 					+ "Access currently restricted to registered users.");
+		}
+		if(showtime.percentBooked() > 0.1) {
+			throw new RuntimeException("All pre purchase tickets have been taken.");
 		}
 		Ticket ticket = new Ticket(cart, seat);
 		cart.getTickets().add(ticket);
@@ -328,10 +333,12 @@ public class UserService {
 			ticket.getSeat().setStatus(SeatStatus.BOOKED);
 			ticket.setUser(user);
 			ticket.setCart(null);
+			sendTicket(user.getID(), ticket);
 		}
 		ticketRepository.saveAll(user.getTickets());
 		cart.getTickets().clear();
 		cartRepository.save(cart);
+		
 	}
 	
 	public List<Ticket> getUserTickets(Long userId){
@@ -370,6 +377,40 @@ public class UserService {
 		ticketRepository.delete(ticket);
 		seatRepository.save(seat);
 		userRepository.save(user);
+	}
+	
+	public void sendReceipt(Long userId, CreditCard cc, Double amount) {
+		String title = "Payment Receipt";
+		String creditCard = "Credit card number: " + cc.getCardNumber();
+		String total = "Total charge: " + amount.toString();
+		String dateTime = "Date: " + LocalDateTime.now().toString();
+		String body = creditCard + "\n" + total + "\n" + dateTime;
+		Optional<User> optUser = userRepository.findById(userId);
+		if (optUser.isEmpty()) {
+			throw new EntityNotFoundException("User does not exist.");
+		}
+		User user = optUser.get();
+		String userEmail = user.getEmail();
+		Email email = new Email(title, body, LocalDateTime.now(), userEmail);
+		emailService.sendEmail(email);
+	}
+	
+	public void sendTicket(Long userId, Ticket ticket) {
+		String title = "Ticket for " + ticket.getMovieName() + " on " + ticket.getShowtime().toString();
+		String movie = "Movie: " + ticket.getMovieName();
+		String theater = "Theater: " + ticket.getTheaterName();
+		String showtime = "Showtime : " + ticket.getShowtime().toString();
+		String seatRow = "Seat row: " + ticket.getSeat().getSeatRow();
+		String seatNumber = "Seat number: " + ticket.getSeat().getSeatNumber();
+		String body = movie + "\n" + theater + "\n" + showtime + "\n" + seatRow + "\n" + seatNumber;
+		Optional<User> optUser = userRepository.findById(userId);
+		if (optUser.isEmpty()) {
+			throw new EntityNotFoundException("User does not exist.");
+		}
+		User user = optUser.get();
+		String userEmail = user.getEmail();
+		Email email = new Email(title, body, LocalDateTime.now(), userEmail);
+		emailService.sendEmail(email);
 	}
 
 }

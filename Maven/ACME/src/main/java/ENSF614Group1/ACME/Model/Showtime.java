@@ -2,7 +2,6 @@ package ENSF614Group1.ACME.Model;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import ENSF614Group1.ACME.Helpers.Views;
+import ENSF614Group1.ACME.Model.Seat.SeatStatus;
 
 @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -70,4 +70,14 @@ public class Showtime {
 		}
 	}
 	
+	public double percentBooked() {
+		double totalSeats = this.seats.size();
+		double seatsTaken = 0;
+		for(Seat seat: this.seats) {
+			if(seat.getStatus() != SeatStatus.AVAILABLE) {
+				seatsTaken++;
+			}
+		}
+		return seatsTaken / totalSeats;
+	}
 }
