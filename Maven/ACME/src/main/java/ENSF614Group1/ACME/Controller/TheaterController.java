@@ -37,7 +37,7 @@ public class TheaterController {
 	    return ResponseEntity.status(HttpStatus.OK).body(theater);
 	}
 	
-	@GetMapping("/{theaterId}/showtime/{showtimeId}/seats")
+	@GetMapping("/showtime/{showtimeId}/seats")
 	@JsonView(Views.TheaterDetail.class)
 	public ResponseEntity<List<Seat>> getSeats(@PathVariable Long showtimeId){
 		List<Seat> seats = theaterService.getSeats(showtimeId);
