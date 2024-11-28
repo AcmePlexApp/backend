@@ -22,6 +22,6 @@ public class GlobalExceptionHandler {
         // Log the exception
         ex.printStackTrace();
         // Send a generic error message
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + ex.getMessage());
     }
 }
