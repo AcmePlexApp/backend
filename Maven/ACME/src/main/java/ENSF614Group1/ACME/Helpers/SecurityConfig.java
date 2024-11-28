@@ -26,6 +26,8 @@ public class SecurityConfig {
     @Order(1)
     public SecurityFilterChain adminAndManagementSecurityFilterChain(HttpSecurity http) throws Exception {
         http
+        	.cors()
+        	.and()
         	.csrf(csrf -> csrf.disable())
             .securityMatcher("/auth/login", "auth/create")
             .authorizeHttpRequests(authorize -> authorize
@@ -41,6 +43,8 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain publicApiSecurityFilterChain(HttpSecurity http) throws Exception {
         http
+        	.cors()
+        	.and()
             .securityMatcher("/theater", "/theater/**", "/movie", "/movie/**")
             .authorizeHttpRequests(authorize -> authorize
                 .anyRequest().permitAll() // Allow all requests without authentication
@@ -56,6 +60,8 @@ public class SecurityConfig {
     @Order(3)
     public SecurityFilterChain adminSecurityFilterChain(HttpSecurity http) throws Exception {
         http
+        	.cors()
+        	.and()
         	.securityMatcher("/admin/**")
             .authorizeHttpRequests(authorize -> authorize
             	.anyRequest().hasRole("ADMIN")
@@ -71,6 +77,8 @@ public class SecurityConfig {
     @Order(4)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
+        	.cors()
+        	.and()
         	.securityMatcher("/**")
             .authorizeHttpRequests(authorize -> authorize
                 .anyRequest().authenticated() // Require authentication for all other URLs

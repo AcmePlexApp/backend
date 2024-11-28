@@ -32,12 +32,12 @@ public class JWTAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
     	
+    	
         String token = jwtUtil.getAuthToken(request);
         if (token == null){ // No AuthHeader
         	chain.doFilter(request, response);
         } else {
         	try {
-        		System.out.println("TOKEN!=NULL");
             	String username = jwtUtil.extractUsername(token);
             	jwtUtil.validateToken(token);
             	UserDetails userDetails = userDetailsService.loadUserByUsername(username);
