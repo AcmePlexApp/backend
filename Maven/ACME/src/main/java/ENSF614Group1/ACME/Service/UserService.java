@@ -267,7 +267,7 @@ public class UserService {
 			throw new RuntimeException("Showing not available to public until a week before release date. "
 					+ "Access currently restricted to registered users.");
 		}
-		if(showtime.percentBooked() > 0.1) {
+		if(daysToRelease > 7 && showtime.percentBooked() > 0.1) {
 			throw new RuntimeException("All pre purchase tickets have been taken.");
 		}
 		Ticket ticket = new Ticket(cart, seat);
