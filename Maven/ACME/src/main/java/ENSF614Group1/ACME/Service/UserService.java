@@ -119,7 +119,7 @@ public class UserService {
 			remainingAmount = applyCredits(user.getID(), amount);
 		}
 		creditCard.charge(remainingAmount);		
-		sendReceipt(user.getID(), creditCard, amount);
+		sendReceipt(user.getID(), creditCard, remainingAmount);
 	}
 	
 	@Transactional
@@ -148,7 +148,8 @@ public class UserService {
 		if (creditAmount > 0.001) {
 			addCreditToUser(user.getID(), creditAmount);
 		}
-		creditCard.refund(refundAmount);		
+		creditCard.refund(refundAmount);
+		sendReceipt(user.getID(), creditCard, refundAmount);
 	}
 	
 	@Transactional
@@ -375,13 +376,14 @@ public class UserService {
 		refund(userId, cc, seat.getCost());
 		seat.setStatus(SeatStatus.AVAILABLE);
 		user.getTickets().remove(ticket);
+		sendCancellation(user.getID(), ticket);
 		ticketRepository.delete(ticket);
 		seatRepository.save(seat);
 		userRepository.save(user);
 	}
 	
 	public void sendReceipt(Long userId, CreditCard cc, Double amount) {
-		String title = "Payment Receipt";
+		String title = "Receipt";
 		String creditCard = "Credit card number: " + cc.getCardNumber();
 		String total = "Total charge: " + amount.toString();
 		String dateTime = "Date: " + LocalDateTime.now().toString();
@@ -398,6 +400,24 @@ public class UserService {
 	
 	public void sendTicket(Long userId, Ticket ticket) {
 		String title = "Ticket for " + ticket.getMovieName() + " on " + ticket.getShowtime().toString();
+		String movie = "Movie: " + ticket.getMovieName();
+		String theater = "Theater: " + ticket.getTheaterName();
+		String showtime = "Showtime : " + ticket.getShowtime().toString();
+		String seatRow = "Seat row: " + ticket.getSeat().getSeatRow();
+		String seatNumber = "Seat number: " + ticket.getSeat().getSeatNumber();
+		String body = movie + "\n" + theater + "\n" + showtime + "\n" + seatRow + "\n" + seatNumber;
+		Optional<User> optUser = userRepository.findById(userId);
+		if (optUser.isEmpty()) {
+			throw new EntityNotFoundException("User does not exist.");
+		}
+		User user = optUser.get();
+		String userEmail = user.getEmail();
+		Email email = new Email(title, body, LocalDateTime.now(), userEmail);
+		emailService.sendEmail(email);
+	}
+	
+	public void sendCancellation(Long userId, Ticket ticket) {
+		String title = "Ticket Cancellation Notice";
 		String movie = "Movie: " + ticket.getMovieName();
 		String theater = "Theater: " + ticket.getTheaterName();
 		String showtime = "Showtime : " + ticket.getShowtime().toString();
